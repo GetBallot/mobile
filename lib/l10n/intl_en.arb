@@ -1,0 +1,48 @@
+{
+  "@@last_modified": "2018-05-31T14:22:49.761291",
+  "mainTitle": "Ballot",
+  "@mainTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "addressInputTitle": "Voting Address",
+  "@addressInputTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "votingAddressLabel": "Registered Voting Address",
+  "@votingAddressLabel": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "lookup": "Lookup",
+  "@lookup": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "votingProfileTitle": "Voting Profile",
+  "@votingProfileTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "california": "California",
+  "@california": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "colorado": "Colorado",
+  "@colorado": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "required": "Required",
+  "@required": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "error": "Error",
+  "@error": {
+    "type": "text",
+    "placeholders": {}
+  }
+}
