@@ -130,6 +130,9 @@ We will be using Firebase as the datastore, with the following collections (the 
 Since Firebase does not allow slashes as key, `/` is replaced by `,` i.e.
 `ocd-division/country:us/state:ca` becomes `ocd-division,country:us,state:ca`
 
+:question: Is this a good Firebase key? See issue [#1](https://github.com/GetBallot/mobile/issues/1).
+
+
 #### Fields for contest
 
     {
@@ -201,7 +204,7 @@ The key for each division is the OCD division identifier from [`representativeIn
 
 Each division contains data for the first election in the future. The date is stored in the field `election` e.g. `20180605`
 
-Example key for contest: `LtGovernor`. The value is the display name e.g.  `Lieutenant Governor`
+Example key for contest: `LtGovernor`. The value is the display name e.g. `Lieutenant Governor`
 
 Together, `division`, `election` and` contest` makes the full key to retrieve the collection of that contest. e.g. [divisions]()/ocd-division,country:us,state:ca/[elections]()/20180605/[contests]()/LtGovernor/
 
@@ -251,6 +254,8 @@ This is used to generate Firebase keys for candidates and referendums from  [`vo
 | response   | YES                         | Yes                                    |
 
 The division-contest pair mapping yields the key into the contests map.
+
+:question: Is `+` a good divider for Firebase keys? See issue [#1](https://github.com/GetBallot/mobile/issues/1).
 
 We use the twitter handle for the candidate as canonical name when possible.
 
