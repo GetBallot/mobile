@@ -12,6 +12,27 @@
 * Remind user to vote
 
 
+## Screens
+
+| Main                                 | |
+| :----------------------------------: |-|
+| Sign up / Login in / Skip            | Only shown to logged out users |
+| &#x2193;                             | |
+| **Address Input**                    | |
+| Enter voting address                 | Skip if logged in: use address from user object |
+| &#x2193;                             | |
+| **Voting profile**                   | |
+| Address, voting divisions            | Only shown if first time, or there is no upcoming election |
+| &#x2193;                             | |
+| **Election**                         | |
+| Date, polling station, contests      | |
+| &#x2193;                             | |
+| **Contest**                          | |
+| Candidates, with stars for favorites | |
+| &#x2193;                             | |
+| **Candidate**                        | |
+| Name, party, bio etc                 | |
+
 ## Google Civic Information API
 
 [Google Civic Information API](https://developers.google.com/civic-information/) will be our primary data source.
