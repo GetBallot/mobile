@@ -1,30 +1,13 @@
-import 'dart:async';
 import 'dart:collection';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 import 'localizations.dart';
-import 'representative_info.dart';
-import 'credentials.dart';
 
-Future<RepresentativeInfo> fetchRepresentativeInfo(context, address) async {
-  final response = await http.get(
-      "https://www.googleapis.com/civicinfo/v2/representatives?key=$GOOGLE_API_KEY&address=${Uri.encodeQueryComponent(address)}&includeOffices=false");
-  final responseJson = json.decode(response.body);
-
-  if (response.statusCode != 200) {
-    String message = BallotLocalizations.of(context).error;
-    if (responseJson["error"] != null &&
-        responseJson["error"]["message"] != null) {
-      message = responseJson["error"]["message"];
-    }
-    throw message;
-  }
-
-  return RepresentativeInfo.fromJson(responseJson);
-}
+import 'package:chopper/chopper.dart';
+import 'chopper/google_civic.dart';
+import 'chopper/jaguar_serializer.dart';
+import 'chopper/models/representative_info.dart';
 
 class VotingProfile extends StatefulWidget {
   final String address;
@@ -36,8 +19,16 @@ class VotingProfile extends StatefulWidget {
 }
 
 class _VotingProfileState extends State<VotingProfile> {
+  final chopper = new ChopperClient(
+      baseUrl: "https://www.googleapis.com/civicinfo/v2",
+      converter: const JaguarConverter(),
+      apis: [new GoogleCivicService()]);
+
   @override
   Widget build(BuildContext context) {
+    final service = chopper.service(GoogleCivicService) as GoogleCivicService;
+    final googleCivic = GoogleCivic(service);
+
     return Scaffold(
       appBar: AppBar(
         title: Text(BallotLocalizations.of(context).votingProfileTitle),
@@ -45,12 +36,14 @@ class _VotingProfileState extends State<VotingProfile> {
       body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: FutureBuilder(
-              future: fetchRepresentativeInfo(context, widget.address),
+              future: googleCivic.representatives(widget.address),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return _createBody(snapshot.data);
+                  return _createBody(snapshot.data.body);
                 } else if (snapshot.hasError) {
-                  return new Center(child: Text(snapshot.error));
+                  return new Center(
+                      child: Text(googleCivic.getErrorMessage(
+                          context, snapshot.error)));
                 }
 
                 // By default, show a loading spinner
