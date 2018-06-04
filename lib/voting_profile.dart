@@ -1,13 +1,13 @@
+import 'dart:async';
 import 'dart:collection';
 
+import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 
-import 'localizations.dart';
-
-import 'package:chopper/chopper.dart';
 import 'chopper/google_civic.dart';
 import 'chopper/jaguar_serializer.dart';
-import 'chopper/models/representative_info.dart';
+import 'chopper/models/civic_info.dart';
+import 'localizations.dart';
 
 class VotingProfile extends StatefulWidget {
   final String address;
@@ -36,10 +36,10 @@ class _VotingProfileState extends State<VotingProfile> {
       body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: FutureBuilder(
-              future: googleCivic.representatives(widget.address),
+              future: googleCivic.voterinfo(widget.address),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return _createBody(snapshot.data.body);
+                  return _createVoterInfoBody(snapshot.data.body);
                 } else if (snapshot.hasError) {
                   return new Center(
                       child: Text(googleCivic.getErrorMessage(
@@ -52,7 +52,28 @@ class _VotingProfileState extends State<VotingProfile> {
     );
   }
 
-  Widget _createBody(RepresentativeInfo data) {
+  Widget _createVoterInfoBody(VoterInfo data) {
+    return _createContests(data.contests);
+  }
+
+  Widget _createContests(List<Contest> contests) {
+    return ListView.builder(
+      itemCount: contests.length,
+      itemBuilder: (context, index) {
+        final contest = contests[index];
+        return ListTile(
+          title: Text(contest.referendumTitle == null
+              ? contest.office
+              : contest.referendumTitle),
+          subtitle: Text(contest.referendumSubtitle == null
+              ? contest.district.name
+              : contest.referendumSubtitle),
+        );
+      },
+    );
+  }
+
+  Widget _createRepresentativeInfoBody(RepresentativeInfo data) {
     return _createDivisions(data.divisions);
   }
 

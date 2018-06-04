@@ -4,7 +4,7 @@ import 'package:Ballot/localizations.dart';
 import 'package:chopper/chopper.dart';
 
 import 'package:Ballot/credentials.dart';
-import 'models/representative_info.dart';
+import 'models/civic_info.dart';
 
 part 'google_civic.chopper.dart';
 
@@ -13,6 +13,10 @@ abstract class GoogleCivicDefinition {
   @Get(url: "/representatives")
   Future<Response<RepresentativeInfo>> representatives(@Query() String address,
       @Query() bool includeOffices, @Query() String key);
+
+  @Get(url: "/voterinfo")
+  Future<Response<VoterInfo>> voterinfo(
+      @Query() String address, @Query() String key);
 }
 
 class GoogleCivic {
@@ -22,6 +26,10 @@ class GoogleCivic {
 
   Future<Response<RepresentativeInfo>> representatives(String address) {
     return service.representatives(address, false, GOOGLE_API_KEY);
+  }
+
+  Future<Response<VoterInfo>> voterinfo(String address) {
+    return service.voterinfo(address, GOOGLE_API_KEY);
   }
 
   String getErrorMessage(context, Response<String> response) {
