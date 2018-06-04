@@ -24,8 +24,21 @@ class _VotingProfileState extends State<VotingProfile> {
       converter: const JaguarConverter(),
       apis: [new GoogleCivicService()]);
 
+  Future<Response> fetch(GoogleCivic googleCivic, String address) async {
+    try {
+      return await googleCivic.voterinfo(address);
+    } catch (e) {
+      if (e is Response<String>) {
+        if (e.statusCode == 400) {
+          return await googleCivic.representatives(address);
+        }
+      }
+      throw e;
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(context) {
     final service = chopper.service(GoogleCivicService) as GoogleCivicService;
     final googleCivic = GoogleCivic(service);
 
@@ -36,10 +49,13 @@ class _VotingProfileState extends State<VotingProfile> {
       body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: FutureBuilder(
-              future: googleCivic.voterinfo(widget.address),
+              future: fetch(googleCivic, widget.address),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return _createVoterInfoBody(snapshot.data.body);
+                  if (snapshot.data is Response<VoterInfo>) {
+                    return _createVoterInfoBody(snapshot.data.body);
+                  }
+                  return _createRepresentativeInfoBody(snapshot.data.body);
                 } else if (snapshot.hasError) {
                   return new Center(
                       child: Text(googleCivic.getErrorMessage(
