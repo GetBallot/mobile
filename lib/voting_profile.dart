@@ -19,12 +19,20 @@ class VotingProfile extends StatefulWidget {
 }
 
 class _VotingProfileState extends State<VotingProfile> {
-  final chopper = new ChopperClient(
-      baseUrl: "https://www.googleapis.com/civicinfo/v2",
-      converter: const JaguarConverter(),
-      apis: [new GoogleCivicService()]);
+  final GoogleCivic googleCivic = _createGoogleCivic();
 
-  Future<Response> fetch(GoogleCivic googleCivic, String address) async {
+  static GoogleCivic _createGoogleCivic() {
+    final chopper = ChopperClient(
+        baseUrl: "https://www.googleapis.com/civicinfo/v2",
+        converter: const JaguarConverter(),
+        apis: [GoogleCivicService()]);
+
+    final service = chopper.service(GoogleCivicService);
+
+    return GoogleCivic(service);
+  }
+
+  Future<Response> fetch(String address) async {
     try {
       return await googleCivic.voterinfo(address);
     } catch (e) {
@@ -39,9 +47,6 @@ class _VotingProfileState extends State<VotingProfile> {
 
   @override
   Widget build(context) {
-    final service = chopper.service(GoogleCivicService) as GoogleCivicService;
-    final googleCivic = GoogleCivic(service);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(BallotLocalizations.of(context).votingProfileTitle),
@@ -49,7 +54,7 @@ class _VotingProfileState extends State<VotingProfile> {
       body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: FutureBuilder(
-              future: fetch(googleCivic, widget.address),
+              future: fetch(widget.address),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.data is Response<VoterInfo>) {
