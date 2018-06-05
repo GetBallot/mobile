@@ -14,7 +14,7 @@ class Address {
   String toString() {
     final buf = StringBuffer();
     buf.write([locationName, line1, line2, line3, city, state]
-        .where((s) => s != null)
+        .where((s) => s != null && s.trim().length != 0)
         .join(", "));
     if (zip != null) {
       buf.writeAll([" ", zip]);
