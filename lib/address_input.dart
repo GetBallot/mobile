@@ -1,16 +1,34 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import 'localizations.dart';
+import 'login.dart';
 import 'voting_profile.dart';
 
 class AddressInputPage extends StatefulWidget {
+  static const String routeName = "/address_input";
+
   @override
   _AddressInputPageState createState() => _AddressInputPageState();
 }
 
 class _AddressInputPageState extends State<AddressInputPage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
+
   final _formKey = GlobalKey<FormState>();
   String _address;
+
+  Future<FirebaseUser> _signOut() async {
+    await _auth.signOut();
+    if (await _googleSignIn.isSignedIn()) {
+      await _googleSignIn.signOut();
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +38,16 @@ class _AddressInputPageState extends State<AddressInputPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(BallotLocalizations.of(context).addressInputTitle),
+        actions: <Widget>[
+          new IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: () {
+              _signOut().then((_) => Navigator
+                  .of(context)
+                  .pushReplacementNamed(LoginPage.routeName));
+            },
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),

@@ -6,9 +6,15 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+
   intl: ^0.15.6
   intl_translation: ^0.16.7
+
   jaguar_serializer: ^1.0.0-dev1
+
+  cloud_firestore: ^0.7.3
+  firebase_auth: ^0.5.11
+  google_sign_in: ^3.0.4
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the Cupertino Icons class for iOS style icons.

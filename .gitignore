@@ -32,3 +32,6 @@ gen/
 .packages
 .pub/
 .flutter-plugins
+
+# Firebase
+google-services.json

@@ -35,6 +35,13 @@ class BallotLocalizations {
     );
   }
 
+  String get signInWithGoogle {
+    return Intl.message(
+      'Sign in with Google',
+      name: 'signInWithGoogle',
+    );
+  }
+
   String get votingAddressLabel {
     return Intl.message(
       'Registered Voting Address',

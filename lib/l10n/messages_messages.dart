@@ -26,6 +26,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "lookup" : MessageLookupByLibrary.simpleMessage("Lookup"),
     "mainTitle" : MessageLookupByLibrary.simpleMessage("Ballot"),
     "required" : MessageLookupByLibrary.simpleMessage("Required"),
+    "signInWithGoogle" : MessageLookupByLibrary.simpleMessage("Sign in with Google"),
     "votingAddressLabel" : MessageLookupByLibrary.simpleMessage("Registered Voting Address"),
     "votingProfileTitle" : MessageLookupByLibrary.simpleMessage("Voting Profile")
   };
