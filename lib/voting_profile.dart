@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 
 import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
@@ -58,9 +57,10 @@ class _VotingProfileState extends State<VotingProfile> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.data is Response<VoterInfo>) {
-                    return _createVoterInfoBody(snapshot.data.body);
+                    return _createVoterInfoBody(context, snapshot.data.body);
                   }
-                  return _createRepresentativeInfoBody(snapshot.data.body);
+                  return _createRepresentativeInfoBody(
+                      context, snapshot.data.body);
                 } else if (snapshot.hasError) {
                   return new Center(
                       child: Text(googleCivic.getErrorMessage(
@@ -73,42 +73,48 @@ class _VotingProfileState extends State<VotingProfile> {
     );
   }
 
-  Widget _createVoterInfoBody(VoterInfo data) {
-    return _createContests(data.contests);
-  }
-
-  Widget _createContests(List<Contest> contests) {
+  Widget _createVoterInfoBody(context, VoterInfo data) {
     return ListView.builder(
-      itemCount: contests.length,
+      itemCount: data.contests.length + 1,
       itemBuilder: (context, index) {
-        final contest = contests[index];
-        return ListTile(
-          title: Text(contest.referendumTitle == null
-              ? contest.office
-              : contest.referendumTitle),
-          subtitle: Text(contest.referendumSubtitle == null
-              ? contest.district.name
-              : contest.referendumSubtitle),
-        );
+        if (index == 0) {
+          return ListTile(
+            title: Text(BallotLocalizations.of(context).votingAddressLabel),
+            subtitle: Text(data.normalizedInput.toString()),
+          );
+        } else {
+          final contest = data.contests[index];
+          return ListTile(
+            title: Text(contest.referendumTitle == null
+                ? contest.office
+                : contest.referendumTitle),
+            subtitle: Text(contest.referendumSubtitle == null
+                ? contest.district.name
+                : contest.referendumSubtitle),
+          );
+        }
       },
     );
   }
 
-  Widget _createRepresentativeInfoBody(RepresentativeInfo data) {
-    return _createDivisions(data.divisions);
-  }
-
-  Widget _createDivisions(LinkedHashMap<String, Division> divisions) {
-    final keys = divisions.keys.toList();
+  Widget _createRepresentativeInfoBody(context, RepresentativeInfo data) {
+    final keys = data.divisions.keys.toList();
     return ListView.builder(
-      itemCount: keys.length,
+      itemCount: keys.length + 1,
       itemBuilder: (context, index) {
-        final ocd = keys[index];
-        final name = divisions[ocd].name;
-        return ListTile(
-          title: Text(name),
-          subtitle: Text(ocd),
-        );
+        if (index == 0) {
+          return ListTile(
+            title: Text(BallotLocalizations.of(context).votingAddressLabel),
+            subtitle: Text(data.normalizedInput.toString()),
+          );
+        } else {
+          final ocd = keys[index - 1];
+          final name = data.divisions[ocd].name;
+          return ListTile(
+            title: Text(name),
+            subtitle: Text(ocd),
+          );
+        }
       },
     );
   }

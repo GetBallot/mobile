@@ -10,6 +10,17 @@ class Address {
   String city;
   String state;
   String zip;
+
+  String toString() {
+    final buf = StringBuffer();
+    buf.write([locationName, line1, line2, line3, city, state]
+        .where((s) => s != null)
+        .join(", "));
+    if (zip != null) {
+      buf.writeAll([" ", zip]);
+    }
+    return buf.toString();
+  }
 }
 
 class RepresentativeInfo {
