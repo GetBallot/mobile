@@ -42,7 +42,7 @@ class Ballot extends StatelessWidget {
           if (snapshot.data == null) {
             return LoginPage();
           } else {
-            return AddressInputPage();
+            return AddressInputPage(firstTime: true);
           }
         },
       ),

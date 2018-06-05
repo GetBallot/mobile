@@ -11,6 +11,10 @@ import 'voting_profile.dart';
 class AddressInputPage extends StatefulWidget {
   static const String routeName = "/address_input";
 
+  final bool firstTime;
+
+  AddressInputPage({Key key, this.firstTime}) : super(key: key);
+
   @override
   _AddressInputPageState createState() => _AddressInputPageState();
 }
@@ -97,7 +101,11 @@ class _AddressInputPageState extends State<AddressInputPage> {
                       var route = MaterialPageRoute(
                         builder: (context) => VotingProfile(address: _address),
                       );
-                      Navigator.of(context).push(route);
+                      if (widget.firstTime) {
+                        Navigator.of(context).pushReplacement(route);
+                      } else {
+                        Navigator.of(context).pop({"address": _address});
+                      }
                     }
                   },
                 ),

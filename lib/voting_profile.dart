@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'chopper/google_civic.dart';
 import 'chopper/jaguar_serializer.dart';
 import 'chopper/models/civic_info.dart';
+
+import 'address_input.dart';
 import 'localizations.dart';
 
 class VotingProfile extends StatefulWidget {
@@ -14,10 +16,13 @@ class VotingProfile extends StatefulWidget {
   VotingProfile({Key key, this.address}) : super(key: key);
 
   @override
-  _VotingProfileState createState() => _VotingProfileState();
+  _VotingProfileState createState() => _VotingProfileState(address);
 }
 
 class _VotingProfileState extends State<VotingProfile> {
+  _VotingProfileState(this.address);
+  String address;
+
   final GoogleCivic googleCivic = _createGoogleCivic();
 
   static GoogleCivic _createGoogleCivic() {
@@ -53,14 +58,13 @@ class _VotingProfileState extends State<VotingProfile> {
       body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: FutureBuilder(
-              future: fetch(widget.address),
+              future: fetch(address),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.data is Response<VoterInfo>) {
-                    return _createVoterInfoBody(context, snapshot.data.body);
+                    return _createVoterInfoBody(snapshot.data.body);
                   }
-                  return _createRepresentativeInfoBody(
-                      context, snapshot.data.body);
+                  return _createRepresentativeInfoBody(snapshot.data.body);
                 } else if (snapshot.hasError) {
                   return new Center(
                       child: Text(googleCivic.getErrorMessage(
@@ -73,15 +77,34 @@ class _VotingProfileState extends State<VotingProfile> {
     );
   }
 
-  Widget _createVoterInfoBody(context, VoterInfo data) {
+  Future _changeAddress() async {
+    Map results = await Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => AddressInputPage(firstTime: false),
+        ));
+
+    if (results != null && results.containsKey("address")) {
+      setState(() {
+        address = results["address"];
+      });
+    }
+  }
+
+  ListTile _createVotingAddressListTile(Address address) {
+    return ListTile(
+        title: Text(BallotLocalizations.of(context).votingAddressLabel),
+        subtitle: Text(address.toString()),
+        trailing: IconButton(
+          icon: Icon(Icons.edit),
+          onPressed: _changeAddress,
+        ));
+  }
+
+  Widget _createVoterInfoBody(VoterInfo data) {
     return ListView.builder(
       itemCount: data.contests.length + 1,
       itemBuilder: (context, index) {
         if (index == 0) {
-          return ListTile(
-            title: Text(BallotLocalizations.of(context).votingAddressLabel),
-            subtitle: Text(data.normalizedInput.toString()),
-          );
+          return _createVotingAddressListTile(data.normalizedInput);
         } else {
           final contest = data.contests[index];
           return ListTile(
@@ -97,16 +120,13 @@ class _VotingProfileState extends State<VotingProfile> {
     );
   }
 
-  Widget _createRepresentativeInfoBody(context, RepresentativeInfo data) {
+  Widget _createRepresentativeInfoBody(RepresentativeInfo data) {
     final keys = data.divisions.keys.toList();
     return ListView.builder(
       itemCount: keys.length + 1,
       itemBuilder: (context, index) {
         if (index == 0) {
-          return ListTile(
-            title: Text(BallotLocalizations.of(context).votingAddressLabel),
-            subtitle: Text(data.normalizedInput.toString()),
-          );
+          return _createVotingAddressListTile(data.normalizedInput);
         } else {
           final ocd = keys[index - 1];
           final name = data.divisions[ocd].name;
