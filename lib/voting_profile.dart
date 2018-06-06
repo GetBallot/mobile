@@ -63,7 +63,9 @@ class _VotingProfileState extends State<VotingProfile> {
   }
 
   void _saveVoterInfo(VoterInfo voterInfo) async {
-    User.getReference(widget.firebaseUser).updateData({"divisions": null});
+    User
+        .getReference(widget.firebaseUser)
+        .updateData({"divisions": null, "electionsCopyTrigger": false});
   }
 
   void _saveRepresentativeInfo(RepresentativeInfo repInfo) async {
@@ -76,7 +78,7 @@ class _VotingProfileState extends State<VotingProfile> {
     if (oldDivisions == null ||
         !Set.from(oldDivisions.keys).containsAll(newDivisions.keys) ||
         !Set.from(newDivisions.keys).containsAll(oldDivisions.keys)) {
-      ref.updateData({"divisions": newDivisions});
+      ref.updateData({"divisions": newDivisions, "electionsCopyTrigger": true});
     }
   }
 
