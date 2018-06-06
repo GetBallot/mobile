@@ -63,6 +63,13 @@ class BallotLocalizations {
     );
   }
 
+  String get changeAddress {
+    return Intl.message(
+      'Change Address',
+      name: 'changeAddress',
+    );
+  }
+
   String get california {
     return Intl.message(
       'California',

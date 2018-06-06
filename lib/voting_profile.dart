@@ -105,8 +105,25 @@ class _VotingProfileState extends State<VotingProfile> {
                 return _createRepresentativeInfoBody(repInfo);
               } else if (snapshot.hasError) {
                 return new Center(
-                    child: Text(
-                        _googleCivic.getErrorMessage(context, snapshot.error)));
+                  child: Container(
+                      child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      new Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                            _googleCivic.getErrorMessage(
+                                context, snapshot.error),
+                            style: TextStyle(fontSize: 20.0)),
+                      ),
+                      RaisedButton(
+                        child:
+                            Text(BallotLocalizations.of(context).changeAddress),
+                        onPressed: _goToAddressInput,
+                      )
+                    ],
+                  )),
+                );
               }
 
               // By default, show a loading spinner
@@ -114,18 +131,21 @@ class _VotingProfileState extends State<VotingProfile> {
             }));
   }
 
+  void _goToAddressInput() {
+    Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => AddressInputPage(
+              firebaseUser: widget.firebaseUser, firstTime: false),
+        ));
+  }
+
   ListTile _createVotingAddressListTile(Address address) {
     return ListTile(
         title: Text(BallotLocalizations.of(context).votingAddressLabel),
         subtitle: Text(address.toString()),
         trailing: IconButton(
-            icon: Icon(Icons.edit),
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => AddressInputPage(
-                        firebaseUser: widget.firebaseUser, firstTime: false),
-                  ));
-            }));
+          icon: Icon(Icons.edit),
+          onPressed: _goToAddressInput,
+        ));
   }
 
   Widget _createVoterInfoBody(VoterInfo data) {
