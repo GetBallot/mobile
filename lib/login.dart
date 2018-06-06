@@ -8,12 +8,21 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'address_input.dart';
 import 'localizations.dart';
 import 'user.dart';
+import 'voting_profile.dart';
 
 class LoginPage extends StatefulWidget {
   static const String routeName = "/login";
 
   @override
   _LoginPageState createState() => new _LoginPageState();
+
+  static Widget onLogin(User user) {
+    if (user.data != null && user.data["address"] != null) {
+      return VotingProfile(firebaseUser: user.firebaseUser);
+    } else {
+      return AddressInputPage(firebaseUser: user.firebaseUser, firstTime: true);
+    }
+  }
 }
 
 class _LoginPageState extends State<LoginPage> {
@@ -46,7 +55,7 @@ class _LoginPageState extends State<LoginPage> {
             onPressed: () {
               _signInWithGoogle().then((user) {
                 var route = MaterialPageRoute(
-                  builder: (context) => AddressInputPage(user: user),
+                  builder: (context) => LoginPage.onLogin(user),
                 );
                 Navigator.of(context).pushReplacement(route);
               });

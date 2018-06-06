@@ -9,7 +9,6 @@ import 'address_input.dart';
 import 'localizations.dart';
 import 'login.dart';
 import 'user.dart';
-import 'voting_profile.dart';
 
 void main() => runApp(Ballot());
 
@@ -54,11 +53,7 @@ class Ballot extends StatelessWidget {
           if (user == null) {
             return LoginPage();
           } else {
-            if (user.data != null && user.data["address"] != null) {
-              return VotingProfile(user: user);
-            } else {
-              return AddressInputPage(user: user);
-            }
+            return LoginPage.onLogin(user);
           }
         },
       ),

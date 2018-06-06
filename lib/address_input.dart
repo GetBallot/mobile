@@ -13,9 +13,11 @@ import 'voting_profile.dart';
 class AddressInputPage extends StatefulWidget {
   static const String routeName = "/address_input";
 
-  final User user;
+  final FirebaseUser firebaseUser;
+  bool firstTime;
 
-  AddressInputPage({Key key, this.user}) : super(key: key);
+  AddressInputPage({Key key, this.firebaseUser, this.firstTime})
+      : super(key: key);
 
   @override
   _AddressInputPageState createState() => _AddressInputPageState();
@@ -29,7 +31,7 @@ class _AddressInputPageState extends State<AddressInputPage> {
   String _address;
 
   void _updateUser() async {
-    DocumentReference ref = User.getReference(widget.user.firebaseUser);
+    DocumentReference ref = User.getReference(widget.firebaseUser);
 
     Firestore.instance.runTransaction((Transaction tx) async {
       DocumentSnapshot snapshot = await tx.get(ref);
@@ -44,11 +46,9 @@ class _AddressInputPageState extends State<AddressInputPage> {
       if (hadAddress) {
         Navigator.of(context).pop({"address": _address});
       } else {
-        DocumentSnapshot freshSnap = await tx.get(ref);
-        widget.user.data = freshSnap.data;
-
         var route = MaterialPageRoute(
-          builder: (context) => VotingProfile(user: widget.user),
+          builder: (context) =>
+              VotingProfile(firebaseUser: widget.firebaseUser),
         );
         Navigator.of(context).pushReplacement(route);
       }

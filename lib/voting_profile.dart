@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:chopper/chopper.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import 'address_input.dart';
@@ -11,17 +12,17 @@ import 'localizations.dart';
 import 'user.dart';
 
 class VotingProfile extends StatefulWidget {
-  final User user;
+  final FirebaseUser firebaseUser;
 
-  VotingProfile({Key key, this.user}) : super(key: key);
+  VotingProfile({Key key, this.firebaseUser}) : super(key: key);
 
   @override
-  _VotingProfileState createState() => _VotingProfileState(user);
+  _VotingProfileState createState() => _VotingProfileState(firebaseUser);
 }
 
 class _VotingProfileState extends State<VotingProfile> {
-  _VotingProfileState(this.user);
-  User user;
+  _VotingProfileState(this.firebaseUser);
+  FirebaseUser firebaseUser;
 
   final GoogleCivic googleCivic = _createGoogleCivic();
 
@@ -50,10 +51,7 @@ class _VotingProfileState extends State<VotingProfile> {
   }
 
   Stream<Response> getStream() {
-    return User
-        .getReference(user.firebaseUser)
-        .snapshots()
-        .asyncMap((snapshot) {
+    return User.getReference(firebaseUser).snapshots().asyncMap((snapshot) {
       String address = snapshot.data["address"];
       return fetch(address);
     });
@@ -84,26 +82,18 @@ class _VotingProfileState extends State<VotingProfile> {
             }));
   }
 
-  Future _changeAddress() async {
-    Map results = await Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => AddressInputPage(user: widget.user),
-        ));
-
-    if (results != null && results.containsKey("address")) {
-      setState(() {
-        user.data["address"] = results["address"];
-      });
-    }
-  }
-
   ListTile _createVotingAddressListTile(Address address) {
     return ListTile(
         title: Text(BallotLocalizations.of(context).votingAddressLabel),
         subtitle: Text(address.toString()),
         trailing: IconButton(
-          icon: Icon(Icons.edit),
-          onPressed: _changeAddress,
-        ));
+            icon: Icon(Icons.edit),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                    builder: (context) => AddressInputPage(
+                        firebaseUser: widget.firebaseUser, firstTime: false),
+                  ));
+            }));
   }
 
   Widget _createVoterInfoBody(VoterInfo data) {
