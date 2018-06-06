@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:chopper/chopper.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -61,6 +62,24 @@ class _VotingProfileState extends State<VotingProfile> {
     });
   }
 
+  void _saveVoterInfo(VoterInfo voterInfo) async {
+    User.getReference(widget.firebaseUser).updateData({"divisions": null});
+  }
+
+  void _saveRepresentativeInfo(RepresentativeInfo repInfo) async {
+    DocumentReference ref = User.getReference(widget.firebaseUser);
+    DocumentSnapshot snapshot = await ref.get();
+
+    Map oldDivisions = snapshot["divisions"];
+    Map newDivisions = repInfo.createDivisionsMap();
+
+    if (oldDivisions == null ||
+        !Set.from(oldDivisions.keys).containsAll(newDivisions.keys) ||
+        !Set.from(newDivisions.keys).containsAll(oldDivisions.keys)) {
+      ref.updateData({"divisions": newDivisions});
+    }
+  }
+
   @override
   Widget build(context) {
     return Scaffold(
@@ -75,9 +94,13 @@ class _VotingProfileState extends State<VotingProfile> {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 if (snapshot.data is Response<VoterInfo>) {
-                  return _createVoterInfoBody(snapshot.data.body);
+                  VoterInfo voterInfo = snapshot.data.body;
+                  _saveVoterInfo(voterInfo);
+                  return _createVoterInfoBody(voterInfo);
                 }
-                return _createRepresentativeInfoBody(snapshot.data.body);
+                RepresentativeInfo repInfo = snapshot.data.body;
+                _saveRepresentativeInfo(repInfo);
+                return _createRepresentativeInfoBody(repInfo);
               } else if (snapshot.hasError) {
                 return new Center(
                     child: Text(

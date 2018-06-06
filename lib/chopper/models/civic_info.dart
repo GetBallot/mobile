@@ -1,5 +1,7 @@
 class Division {
   String name;
+
+  Map toMap() => {"name": name};
 }
 
 class Address {
@@ -26,6 +28,14 @@ class Address {
 class RepresentativeInfo {
   Address normalizedInput;
   Map<String, Division> divisions;
+
+  Map createDivisionsMap() {
+    final map = Map();
+    divisions.forEach((ocd, division) {
+      map[ocd] = division.toMap();
+    });
+    return map;
+  }
 }
 
 class PollingLocation {
