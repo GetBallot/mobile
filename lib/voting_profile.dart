@@ -3,12 +3,14 @@ import 'dart:async';
 import 'package:chopper/chopper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import 'address_input.dart';
 import 'chopper/google_civic.dart';
 import 'chopper/jaguar_serializer.dart';
 import 'chopper/models/civic_info.dart';
 import 'localizations.dart';
+import 'login.dart';
 import 'user.dart';
 
 class VotingProfile extends StatefulWidget {
@@ -24,6 +26,8 @@ class _VotingProfileState extends State<VotingProfile> {
   _VotingProfileState(this.firebaseUser);
   FirebaseUser firebaseUser;
 
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
   final GoogleCivic googleCivic = _createGoogleCivic();
 
   static GoogleCivic _createGoogleCivic() {
@@ -62,6 +66,9 @@ class _VotingProfileState extends State<VotingProfile> {
     return Scaffold(
         appBar: AppBar(
           title: Text(BallotLocalizations.of(context).votingProfileTitle),
+          actions: <Widget>[
+            LoginPage.createLogoutButton(context, _auth, _googleSignIn),
+          ],
         ),
         body: StreamBuilder(
             stream: getStream(),

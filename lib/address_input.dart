@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -55,14 +53,6 @@ class _AddressInputPageState extends State<AddressInputPage> {
     });
   }
 
-  Future<FirebaseUser> _signOut() async {
-    await _auth.signOut();
-    if (await _googleSignIn.isSignedIn()) {
-      await _googleSignIn.signOut();
-    }
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -71,16 +61,11 @@ class _AddressInputPageState extends State<AddressInputPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(BallotLocalizations.of(context).addressInputTitle),
-        actions: <Widget>[
-          new IconButton(
-            icon: Icon(Icons.exit_to_app),
-            onPressed: () {
-              _signOut().then((_) => Navigator
-                  .of(context)
-                  .pushReplacementNamed(LoginPage.routeName));
-            },
-          )
-        ],
+        actions: widget.firstTime
+            ? <Widget>[
+                LoginPage.createLogoutButton(context, _auth, _googleSignIn),
+              ]
+            : null,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),

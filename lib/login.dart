@@ -23,6 +23,24 @@ class LoginPage extends StatefulWidget {
       return AddressInputPage(firebaseUser: user.firebaseUser, firstTime: true);
     }
   }
+
+  static Future<FirebaseUser> _logOut(auth, googleSignIn) async {
+    await auth.signOut();
+    if (await googleSignIn.isSignedIn()) {
+      await googleSignIn.signOut();
+    }
+    return null;
+  }
+
+  static Widget createLogoutButton(context, auth, googleSignIn) {
+    return IconButton(
+      icon: Icon(Icons.exit_to_app),
+      onPressed: () {
+        _logOut(auth, googleSignIn).then((_) =>
+            Navigator.of(context).pushReplacementNamed(LoginPage.routeName));
+      },
+    );
+  }
 }
 
 class _LoginPageState extends State<LoginPage> {
