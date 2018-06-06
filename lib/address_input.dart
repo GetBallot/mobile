@@ -1,19 +1,21 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import 'localizations.dart';
 import 'login.dart';
+import 'user.dart';
 import 'voting_profile.dart';
 
 class AddressInputPage extends StatefulWidget {
   static const String routeName = "/address_input";
 
-  final bool firstTime;
+  final User user;
 
-  AddressInputPage({Key key, this.firstTime}) : super(key: key);
+  AddressInputPage({Key key, this.user}) : super(key: key);
 
   @override
   _AddressInputPageState createState() => _AddressInputPageState();
@@ -25,6 +27,33 @@ class _AddressInputPageState extends State<AddressInputPage> {
 
   final _formKey = GlobalKey<FormState>();
   String _address;
+
+  void _updateUser() async {
+    DocumentReference ref = User.getReference(widget.user.firebaseUser);
+
+    Firestore.instance.runTransaction((Transaction tx) async {
+      DocumentSnapshot snapshot = await tx.get(ref);
+      final hadAddress = snapshot.exists && snapshot["address"] != null;
+
+      if (snapshot.exists) {
+        await tx.update(snapshot.reference, {"address": _address});
+      } else {
+        await tx.set(snapshot.reference, {"address": _address});
+      }
+
+      if (hadAddress) {
+        Navigator.of(context).pop({"address": _address});
+      } else {
+        DocumentSnapshot freshSnap = await tx.get(ref);
+        widget.user.data = freshSnap.data;
+
+        var route = MaterialPageRoute(
+          builder: (context) => VotingProfile(user: widget.user),
+        );
+        Navigator.of(context).pushReplacement(route);
+      }
+    });
+  }
 
   Future<FirebaseUser> _signOut() async {
     await _auth.signOut();
@@ -98,14 +127,7 @@ class _AddressInputPageState extends State<AddressInputPage> {
                     final form = _formKey.currentState;
                     if (form.validate()) {
                       form.save();
-                      var route = MaterialPageRoute(
-                        builder: (context) => VotingProfile(address: _address),
-                      );
-                      if (widget.firstTime) {
-                        Navigator.of(context).pushReplacement(route);
-                      } else {
-                        Navigator.of(context).pop({"address": _address});
-                      }
+                      _updateUser();
                     }
                   },
                 ),

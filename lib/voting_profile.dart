@@ -3,25 +3,25 @@ import 'dart:async';
 import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 
+import 'address_input.dart';
 import 'chopper/google_civic.dart';
 import 'chopper/jaguar_serializer.dart';
 import 'chopper/models/civic_info.dart';
-
-import 'address_input.dart';
 import 'localizations.dart';
+import 'user.dart';
 
 class VotingProfile extends StatefulWidget {
-  final String address;
+  final User user;
 
-  VotingProfile({Key key, this.address}) : super(key: key);
+  VotingProfile({Key key, this.user}) : super(key: key);
 
   @override
-  _VotingProfileState createState() => _VotingProfileState(address);
+  _VotingProfileState createState() => _VotingProfileState(user);
 }
 
 class _VotingProfileState extends State<VotingProfile> {
-  _VotingProfileState(this.address);
-  String address;
+  _VotingProfileState(this.user);
+  User user;
 
   final GoogleCivic googleCivic = _createGoogleCivic();
 
@@ -58,7 +58,7 @@ class _VotingProfileState extends State<VotingProfile> {
       body: Padding(
           padding: const EdgeInsets.all(8.0),
           child: FutureBuilder(
-              future: fetch(address),
+              future: fetch(user.data["address"]),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   if (snapshot.data is Response<VoterInfo>) {
@@ -79,12 +79,12 @@ class _VotingProfileState extends State<VotingProfile> {
 
   Future _changeAddress() async {
     Map results = await Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => AddressInputPage(firstTime: false),
+          builder: (context) => AddressInputPage(user: widget.user),
         ));
 
     if (results != null && results.containsKey("address")) {
       setState(() {
-        address = results["address"];
+        user.data["address"] = results["address"];
       });
     }
   }
@@ -106,7 +106,7 @@ class _VotingProfileState extends State<VotingProfile> {
         if (index == 0) {
           return _createVotingAddressListTile(data.normalizedInput);
         } else {
-          final contest = data.contests[index];
+          final contest = data.contests[index - 1];
           return ListTile(
             title: Text(contest.referendumTitle == null
                 ? contest.office

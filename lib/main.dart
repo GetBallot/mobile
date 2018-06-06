@@ -1,20 +1,31 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'package:firebase_auth/firebase_auth.dart';
-
-import 'localizations.dart';
 import 'address_input.dart';
+import 'localizations.dart';
 import 'login.dart';
+import 'user.dart';
+import 'voting_profile.dart';
 
 void main() => runApp(Ballot());
 
 class Ballot extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<FirebaseUser> getCurrentUser() async => await _auth.currentUser();
+  Future<User> getCurrentUser() async {
+    FirebaseUser firebaseUser = await _auth.currentUser();
+    if (firebaseUser == null) {
+      return null;
+    }
+
+    DocumentSnapshot snapshot = await User.getReference(firebaseUser).get();
+
+    return User(firebaseUser, snapshot.data);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,13 +47,18 @@ class Ballot extends StatelessWidget {
       // with the specified delegates. BallotLocalizations.of()
       // will only find the app's Localizations widget if its
       // context is a child of the app.
-      home: FutureBuilder<FirebaseUser>(
+      home: FutureBuilder<User>(
         future: getCurrentUser(),
-        builder: (context, AsyncSnapshot<FirebaseUser> snapshot) {
-          if (snapshot.data == null) {
+        builder: (context, AsyncSnapshot<User> snapshot) {
+          User user = snapshot.data;
+          if (user == null) {
             return LoginPage();
           } else {
-            return AddressInputPage(firstTime: true);
+            if (user.data != null && user.data["address"] != null) {
+              return VotingProfile(user: user);
+            } else {
+              return AddressInputPage(user: user);
+            }
           }
         },
       ),
