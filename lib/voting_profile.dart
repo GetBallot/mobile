@@ -28,7 +28,7 @@ class _VotingProfileState extends State<VotingProfile> {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
-  final GoogleCivic googleCivic = _createGoogleCivic();
+  final GoogleCivic _googleCivic = _createGoogleCivic();
 
   static GoogleCivic _createGoogleCivic() {
     final chopper = ChopperClient(
@@ -41,23 +41,23 @@ class _VotingProfileState extends State<VotingProfile> {
     return GoogleCivic(service);
   }
 
-  Future<Response> fetch(String address) async {
+  Future<Response> _fetch(String address) async {
     try {
-      return await googleCivic.voterinfo(address);
+      return await _googleCivic.voterinfo(address);
     } catch (e) {
       if (e is Response<String>) {
         if (e.statusCode == 400) {
-          return await googleCivic.representatives(address);
+          return await _googleCivic.representatives(address);
         }
       }
       throw e;
     }
   }
 
-  Stream<Response> getStream() {
+  Stream<Response> _getUserStream() {
     return User.getReference(firebaseUser).snapshots().asyncMap((snapshot) {
       String address = snapshot.data["address"];
-      return fetch(address);
+      return _fetch(address);
     });
   }
 
@@ -71,7 +71,7 @@ class _VotingProfileState extends State<VotingProfile> {
           ],
         ),
         body: StreamBuilder(
-            stream: getStream(),
+            stream: _getUserStream(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 if (snapshot.data is Response<VoterInfo>) {
@@ -81,7 +81,7 @@ class _VotingProfileState extends State<VotingProfile> {
               } else if (snapshot.hasError) {
                 return new Center(
                     child: Text(
-                        googleCivic.getErrorMessage(context, snapshot.error)));
+                        _googleCivic.getErrorMessage(context, snapshot.error)));
               }
 
               // By default, show a loading spinner
