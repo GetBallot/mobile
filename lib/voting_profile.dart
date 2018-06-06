@@ -49,32 +49,39 @@ class _VotingProfileState extends State<VotingProfile> {
     }
   }
 
+  Stream<Response> getStream() {
+    return User
+        .getReference(user.firebaseUser)
+        .snapshots()
+        .asyncMap((snapshot) {
+      String address = snapshot.data["address"];
+      return fetch(address);
+    });
+  }
+
   @override
   Widget build(context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(BallotLocalizations.of(context).votingProfileTitle),
-      ),
-      body: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: FutureBuilder(
-              future: fetch(user.data["address"]),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  if (snapshot.data is Response<VoterInfo>) {
-                    return _createVoterInfoBody(snapshot.data.body);
-                  }
-                  return _createRepresentativeInfoBody(snapshot.data.body);
-                } else if (snapshot.hasError) {
-                  return new Center(
-                      child: Text(googleCivic.getErrorMessage(
-                          context, snapshot.error)));
+        appBar: AppBar(
+          title: Text(BallotLocalizations.of(context).votingProfileTitle),
+        ),
+        body: StreamBuilder(
+            stream: getStream(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                if (snapshot.data is Response<VoterInfo>) {
+                  return _createVoterInfoBody(snapshot.data.body);
                 }
+                return _createRepresentativeInfoBody(snapshot.data.body);
+              } else if (snapshot.hasError) {
+                return new Center(
+                    child: Text(
+                        googleCivic.getErrorMessage(context, snapshot.error)));
+              }
 
-                // By default, show a loading spinner
-                return new Center(child: CircularProgressIndicator());
-              })),
-    );
+              // By default, show a loading spinner
+              return new Center(child: CircularProgressIndicator());
+            }));
   }
 
   Future _changeAddress() async {
