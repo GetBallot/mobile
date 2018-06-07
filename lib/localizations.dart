@@ -70,20 +70,6 @@ class BallotLocalizations {
     );
   }
 
-  String get california {
-    return Intl.message(
-      'California',
-      name: 'california',
-    );
-  }
-
-  String get colorado {
-    return Intl.message(
-      'Colorado',
-      name: 'colorado',
-    );
-  }
-
   String get required {
     return Intl.message(
       'Required',

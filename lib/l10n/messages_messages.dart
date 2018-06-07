@@ -20,9 +20,7 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
     "addressInputTitle" : MessageLookupByLibrary.simpleMessage("Voting Address"),
-    "california" : MessageLookupByLibrary.simpleMessage("California"),
     "changeAddress" : MessageLookupByLibrary.simpleMessage("Change Address"),
-    "colorado" : MessageLookupByLibrary.simpleMessage("Colorado"),
     "error" : MessageLookupByLibrary.simpleMessage("Error"),
     "lookup" : MessageLookupByLibrary.simpleMessage("Lookup"),
     "mainTitle" : MessageLookupByLibrary.simpleMessage("Ballot"),

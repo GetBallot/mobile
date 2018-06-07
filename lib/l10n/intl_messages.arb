@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-06-06T16:04:12.366997",
+  "@@last_modified": "2018-06-07T14:44:05.939266",
   "mainTitle": "Ballot",
   "@mainTitle": {
     "type": "text",
@@ -32,16 +32,6 @@
   },
   "changeAddress": "Change Address",
   "@changeAddress": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "california": "California",
-  "@california": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "colorado": "Colorado",
-  "@colorado": {
     "type": "text",
     "placeholders": {}
   },

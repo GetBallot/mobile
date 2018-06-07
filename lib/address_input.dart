@@ -93,13 +93,13 @@ class _AddressInputPageState extends State<AddressInputPage> {
                 children: <Widget>[
                   Text('Examples:'),
                   _createAddressExampleButton(
-                      BallotLocalizations.of(context).california,
-                      '1456 Edgewood Dr, Palo Alto, CA 94301',
+                      "Colorado",
+                      '5101 E Montview Blvd, Denver, CO 80207',
                       theme,
                       addressController),
                   _createAddressExampleButton(
-                      BallotLocalizations.of(context).colorado,
-                      '5101 E Montview Blvd, Denver, CO 80207',
+                      "Virginia",
+                      "1716 Winder St, Richmond, VA 23220",
                       theme,
                       addressController),
                 ],
