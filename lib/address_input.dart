@@ -93,8 +93,13 @@ class _AddressInputPageState extends State<AddressInputPage> {
                 children: <Widget>[
                   Text('Examples:'),
                   _createAddressExampleButton(
-                      "Colorado",
-                      '5101 E Montview Blvd, Denver, CO 80207',
+                      "Castle Rock",
+                      "488 Black Feather Loop, Castle Rock, CO",
+                      theme,
+                      addressController),
+                  _createAddressExampleButton(
+                      "Firestone",
+                      "326 Jackson Ave, Firestone, CO 80520",
                       theme,
                       addressController),
                   _createAddressExampleButton(
