@@ -1,7 +1,7 @@
 class Division {
   String name;
 
-  Map toMap() => {"name": name};
+  Map<String, dynamic> toMap() => {"name": name};
 }
 
 class Address {

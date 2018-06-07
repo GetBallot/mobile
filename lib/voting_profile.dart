@@ -63,23 +63,47 @@ class _VotingProfileState extends State<VotingProfile> {
   }
 
   void _saveVoterInfo(VoterInfo voterInfo) async {
-    User
-        .getReference(widget.firebaseUser)
-        .updateData({"divisions": null, "electionsCopyTrigger": false});
+    final userRef = User.getReference(widget.firebaseUser);
+    final divisionsRef = userRef.collection("divisions");
+    _deleteOldDivisions(divisionsRef, null);
   }
 
   void _saveRepresentativeInfo(RepresentativeInfo repInfo) async {
-    DocumentReference ref = User.getReference(widget.firebaseUser);
-    DocumentSnapshot snapshot = await ref.get();
+    final userRef = User.getReference(widget.firebaseUser);
+    final divisionsRef = userRef.collection("divisions");
 
-    Map oldDivisions = snapshot["divisions"];
-    Map newDivisions = repInfo.createDivisionsMap();
+    final newDivisions = Set<String>();
 
-    if (oldDivisions == null ||
-        !Set.from(oldDivisions.keys).containsAll(newDivisions.keys) ||
-        !Set.from(newDivisions.keys).containsAll(oldDivisions.keys)) {
-      ref.updateData({"divisions": newDivisions, "electionsCopyTrigger": true});
-    }
+    repInfo.divisions.keys.forEach((ocd) {
+      final key = ocd.replaceAll("/", ",");
+      final divisionRef = divisionsRef.document(key);
+      newDivisions.add(divisionRef.path);
+    });
+
+    Set<String> oldDivisions =
+        await _deleteOldDivisions(divisionsRef, newDivisions);
+
+    repInfo.divisions.forEach((ocd, division) {
+      final key = ocd.replaceAll("/", ",");
+      if (!oldDivisions.contains(key)) {
+        final divisionRef = divisionsRef.document(key);
+        divisionRef.setData(division.toMap());
+      }
+    });
+  }
+
+  Future<Set<String>> _deleteOldDivisions(
+      CollectionReference ref, Set<String> newDivisions) async {
+    final oldDivisions = Set<String>();
+    final query = await ref.getDocuments();
+    query.documents.forEach((doc) async {
+      if (newDivisions == null || !newDivisions.contains(doc.reference.path)) {
+        await doc.reference.delete();
+      } else {
+        oldDivisions.add(doc.reference.path);
+      }
+    });
+    return oldDivisions;
   }
 
   @override
