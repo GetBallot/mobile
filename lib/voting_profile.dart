@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:intl/intl.dart';
 
 import 'address_input.dart';
 import 'chopper/google_civic.dart';
@@ -87,23 +88,34 @@ class _VotingProfileState extends State<VotingProfile> {
       final key = ocd.replaceAll("/", ",");
       if (!oldDivisions.contains(key)) {
         final divisionRef = divisionsRef.document(key);
-        divisionRef.setData(division.toMap());
+        final map = division.toMap();
+        map["lang"] = _getLang();
+        divisionRef.setData(map);
       }
     });
   }
 
   Future<Set<String>> _deleteOldDivisions(
       CollectionReference ref, Set<String> newDivisions) async {
+    final lang = _getLang();
     final oldDivisions = Set<String>();
     final query = await ref.getDocuments();
     query.documents.forEach((doc) async {
-      if (newDivisions == null || !newDivisions.contains(doc.reference.path)) {
+      if (newDivisions == null ||
+          !newDivisions.contains(doc.reference.path) ||
+          doc.data["lang"] != lang) {
         await doc.reference.delete();
       } else {
         oldDivisions.add(doc.reference.path);
       }
     });
     return oldDivisions;
+  }
+
+  // TODO: Use BallotLocalizations to always get a supported language
+  String _getLang() {
+    final lang = Intl.defaultLocale;
+    return ['en'].contains(lang) ? lang : 'en';
   }
 
   @override
