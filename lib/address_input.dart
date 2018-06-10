@@ -29,28 +29,16 @@ class _AddressInputPageState extends State<AddressInputPage> {
   String _address;
 
   void _updateUser() async {
-    DocumentReference ref = User.getReference(widget.firebaseUser);
+    User
+        .getReference(widget.firebaseUser)
+        .collection("triggers")
+        .document("address")
+        .setData({"address": _address});
 
-    Firestore.instance.runTransaction((Transaction tx) async {
-      DocumentSnapshot snapshot = await tx.get(ref);
-      final hadAddress = snapshot.exists && snapshot["address"] != null;
-
-      if (snapshot.exists) {
-        await tx.update(snapshot.reference, {"address": _address});
-      } else {
-        await tx.set(snapshot.reference, {"address": _address});
-      }
-
-      if (hadAddress) {
-        Navigator.of(context).pop({"address": _address});
-      } else {
-        var route = MaterialPageRoute(
-          builder: (context) =>
-              VotingProfile(firebaseUser: widget.firebaseUser),
-        );
-        Navigator.of(context).pushReplacement(route);
-      }
-    });
+    var route = MaterialPageRoute(
+      builder: (context) => VotingProfile(firebaseUser: widget.firebaseUser),
+    );
+    Navigator.of(context).pushReplacement(route);
   }
 
   @override

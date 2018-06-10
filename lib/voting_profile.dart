@@ -56,12 +56,13 @@ class _VotingProfileState extends State<VotingProfile> {
     }
   }
 
-  Stream<Response> _getUserStream() {
-    return User.getReference(firebaseUser).snapshots().asyncMap((snapshot) {
-      String address = snapshot.data["address"];
-      return _fetch(address);
-    });
-  }
+  Stream<Response> _getUserStream() => User
+      .getReference(firebaseUser)
+      .collection("triggers")
+      .document("address")
+      .snapshots()
+      .map((snapshot) => snapshot["address"])
+      .asyncMap((snapshot) => _fetch(snapshot));
 
   void _saveVoterInfo(VoterInfo voterInfo) async {
     final userRef = User.getReference(widget.firebaseUser);
