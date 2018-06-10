@@ -1,7 +1,7 @@
+import '../jaguar_serializer.dart';
+
 class Division {
   String name;
-
-  Map<String, dynamic> toMap() => {"name": name};
 }
 
 class Address {
@@ -21,19 +21,19 @@ class Address {
     if (zip != null) {
       buf.writeAll([" ", zip]);
     }
-    return buf.toString();
+    return buf.toString().trim();
   }
 }
 
 class RepresentativeInfo {
+  static final serializer = RepresentativeInfoSerializer();
+
   Address normalizedInput;
   Map<String, Division> divisions;
 
-  Map createDivisionsMap() {
-    final map = Map();
-    divisions.forEach((ocd, division) {
-      map[ocd] = division.toMap();
-    });
+  Map serialize() {
+    final map = serializer.serialize(this);
+    map["input"] = normalizedInput.toString();
     return map;
   }
 }
@@ -76,7 +76,15 @@ class Contest {
 }
 
 class VoterInfo {
+  static final serializer = VoterInfoSerializer();
+
   Address normalizedInput;
   List<PollingLocation> pollingLocations;
   List<Contest> contests;
+
+  Map serialize() {
+    final map = serializer.serialize(this);
+    map["input"] = normalizedInput.toString();
+    return map;
+  }
 }

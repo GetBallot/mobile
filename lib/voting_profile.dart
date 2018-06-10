@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:chopper/chopper.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -65,52 +64,19 @@ class _VotingProfileState extends State<VotingProfile> {
       .asyncMap((snapshot) => _fetch(snapshot));
 
   void _saveVoterInfo(VoterInfo voterInfo) async {
-    final userRef = User.getReference(widget.firebaseUser);
-    final divisionsRef = userRef.collection("divisions");
-    _deleteOldDivisions(divisionsRef, null);
+    User
+        .getReference(widget.firebaseUser)
+        .collection("triggers")
+        .document("voterinfo")
+        .setData({"lang": _getLang(), "voterinfo": voterInfo.serialize()});
   }
 
   void _saveRepresentativeInfo(RepresentativeInfo repInfo) async {
-    final userRef = User.getReference(widget.firebaseUser);
-    final divisionsRef = userRef.collection("divisions");
-
-    final newDivisions = Set<String>();
-
-    repInfo.divisions.keys.forEach((ocd) {
-      final key = ocd.replaceAll("/", ",");
-      final divisionRef = divisionsRef.document(key);
-      newDivisions.add(divisionRef.path);
-    });
-
-    Set<String> oldDivisions =
-        await _deleteOldDivisions(divisionsRef, newDivisions);
-
-    repInfo.divisions.forEach((ocd, division) {
-      final key = ocd.replaceAll("/", ",");
-      if (!oldDivisions.contains(key)) {
-        final divisionRef = divisionsRef.document(key);
-        final map = division.toMap();
-        map["lang"] = _getLang();
-        divisionRef.setData(map);
-      }
-    });
-  }
-
-  Future<Set<String>> _deleteOldDivisions(
-      CollectionReference ref, Set<String> newDivisions) async {
-    final lang = _getLang();
-    final oldDivisions = Set<String>();
-    final query = await ref.getDocuments();
-    query.documents.forEach((doc) async {
-      if (newDivisions == null ||
-          !newDivisions.contains(doc.reference.path) ||
-          doc.data["lang"] != lang) {
-        await doc.reference.delete();
-      } else {
-        oldDivisions.add(doc.reference.path);
-      }
-    });
-    return oldDivisions;
+    User
+        .getReference(widget.firebaseUser)
+        .collection("triggers")
+        .document("representatives")
+        .setData({"lang": _getLang(), "representatives": repInfo.serialize()});
   }
 
   // TODO: Use BallotLocalizations to always get a supported language
