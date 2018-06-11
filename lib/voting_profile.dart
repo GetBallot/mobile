@@ -44,15 +44,32 @@ class _VotingProfileState extends State<VotingProfile> {
 
   Future<Response> _fetch(String address) async {
     try {
-      return await _googleCivic.voterinfo(address);
+      final response = await _fetchVoterInfo(address);
+      _fetchRepresentativeInfo(address, false);
+      return response;
     } catch (e) {
       if (e is Response<String>) {
         if (e.statusCode == 400) {
-          return await _googleCivic.representatives(address);
+          _deleteVoterInfo();
+          return _fetchRepresentativeInfo(address, true);
         }
       }
       throw e;
     }
+  }
+
+  Future<Response> _fetchVoterInfo(String address) async {
+    final Response<VoterInfo> response = await _googleCivic.voterinfo(address);
+    _saveVoterInfo(response.body);
+    return response;
+  }
+
+  Future<Response> _fetchRepresentativeInfo(
+      String address, bool updateUpcomingElection) async {
+    final Response<RepresentativeInfo> response =
+        await _googleCivic.representatives(address);
+    _saveRepresentativeInfo(response.body, updateUpcomingElection);
+    return response;
   }
 
   Stream<Response> _getUserStream() => User
@@ -71,12 +88,26 @@ class _VotingProfileState extends State<VotingProfile> {
         .setData({"lang": _getLang(), "voterinfo": voterInfo.serialize()});
   }
 
-  void _saveRepresentativeInfo(RepresentativeInfo repInfo) async {
+  void _deleteVoterInfo() async {
+    User
+        .getReference(widget.firebaseUser)
+        .collection("triggers")
+        .document("voterinfo")
+        .delete();
+  }
+
+  void _saveRepresentativeInfo(
+      RepresentativeInfo repInfo, bool updateUpcomingElection) async {
+    final data = {'lang': _getLang(), 'representatives': repInfo.serialize()};
+    if (updateUpcomingElection) {
+      data['updateUpcomingElection'] = DateTime.now();
+    }
+
     User
         .getReference(widget.firebaseUser)
         .collection("triggers")
         .document("representatives")
-        .setData({"lang": _getLang(), "representatives": repInfo.serialize()});
+        .setData(data);
   }
 
   // TODO: Use BallotLocalizations to always get a supported language
@@ -100,11 +131,9 @@ class _VotingProfileState extends State<VotingProfile> {
               if (snapshot.hasData) {
                 if (snapshot.data is Response<VoterInfo>) {
                   VoterInfo voterInfo = snapshot.data.body;
-                  _saveVoterInfo(voterInfo);
                   return _createVoterInfoBody(voterInfo);
                 }
                 RepresentativeInfo repInfo = snapshot.data.body;
-                _saveRepresentativeInfo(repInfo);
                 return _createRepresentativeInfoBody(repInfo);
               } else if (snapshot.hasError) {
                 return new Center(
