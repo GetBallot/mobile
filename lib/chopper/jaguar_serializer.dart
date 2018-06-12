@@ -32,12 +32,17 @@ class ChannelSerializer extends Serializer<Channel> with _$ChannelSerializer {}
 class CandidateSerializer extends Serializer<Candidate>
     with _$CandidateSerializer {}
 
+@GenSerializer()
+class ElectionSerializer extends Serializer<Election>
+    with _$ElectionSerializer {}
+
 @GenSerializer(serializers: [CandidateSerializer, DistrictSerializer])
 class ContestSerializer extends Serializer<Contest> with _$ContestSerializer {}
 
 @GenSerializer(serializers: [
   AddressSerializer,
   ContestSerializer,
+  ElectionSerializer,
   PollingLocationSerializer
 ])
 class VoterInfoSerializer extends Serializer<VoterInfo>

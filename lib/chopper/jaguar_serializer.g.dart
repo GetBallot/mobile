@@ -262,6 +262,39 @@ abstract class _$CandidateSerializer implements Serializer<Candidate> {
   String modelString() => 'Candidate';
 }
 
+abstract class _$ElectionSerializer implements Serializer<Election> {
+  @override
+  Map<String, dynamic> toMap(Election model,
+      {bool withType: false, String typeKey}) {
+    Map<String, dynamic> ret;
+    if (model != null) {
+      ret = <String, dynamic>{};
+      setNullableValue(ret, 'id', model.id);
+      setNullableValue(ret, 'name', model.name);
+      setNullableValue(ret, 'electionDay', model.electionDay);
+      setNullableValue(ret, 'ocdDivisionId', model.ocdDivisionId);
+      setTypeKeyValue(typeKey, modelString(), withType, ret);
+    }
+    return ret;
+  }
+
+  @override
+  Election fromMap(Map<String, dynamic> map, {Election model}) {
+    if (map == null) {
+      return null;
+    }
+    final obj = model ?? new Election();
+    obj.id = map['id'] as String;
+    obj.name = map['name'] as String;
+    obj.electionDay = map['electionDay'] as String;
+    obj.ocdDivisionId = map['ocdDivisionId'] as String;
+    return obj;
+  }
+
+  @override
+  String modelString() => 'Election';
+}
+
 abstract class _$ContestSerializer implements Serializer<Contest> {
   final _districtSerializer = new DistrictSerializer();
   final _candidateSerializer = new CandidateSerializer();
@@ -329,6 +362,7 @@ abstract class _$ContestSerializer implements Serializer<Contest> {
 }
 
 abstract class _$VoterInfoSerializer implements Serializer<VoterInfo> {
+  final _electionSerializer = new ElectionSerializer();
   final _addressSerializer = new AddressSerializer();
   final _pollingLocationSerializer = new PollingLocationSerializer();
   final _contestSerializer = new ContestSerializer();
@@ -339,6 +373,11 @@ abstract class _$VoterInfoSerializer implements Serializer<VoterInfo> {
     Map<String, dynamic> ret;
     if (model != null) {
       ret = <String, dynamic>{};
+      setNullableValue(
+          ret,
+          'election',
+          _electionSerializer.toMap(model.election,
+              withType: withType, typeKey: typeKey));
       setNullableValue(
           ret,
           'normalizedInput',
@@ -369,6 +408,8 @@ abstract class _$VoterInfoSerializer implements Serializer<VoterInfo> {
       return null;
     }
     final obj = model ?? new VoterInfo();
+    obj.election =
+        _electionSerializer.fromMap(map['election'] as Map<String, dynamic>);
     obj.normalizedInput = _addressSerializer
         .fromMap(map['normalizedInput'] as Map<String, dynamic>);
     obj.pollingLocations = nullableIterableMapper<PollingLocation>(

@@ -75,9 +75,17 @@ class Contest {
   List<String> referendumBallotResponses;
 }
 
+class Election {
+  String id;
+  String name;
+  String electionDay;
+  String ocdDivisionId;
+}
+
 class VoterInfo {
   static final serializer = VoterInfoSerializer();
 
+  Election election;
   Address normalizedInput;
   List<PollingLocation> pollingLocations;
   List<Contest> contests;
