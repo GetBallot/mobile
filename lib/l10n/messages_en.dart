@@ -21,9 +21,12 @@ class MessageLookup extends MessageLookupByLibrary {
   static _notInlinedMessages(_) => <String, Function> {
     "addressInputTitle" : MessageLookupByLibrary.simpleMessage("Voting Address"),
     "changeAddress" : MessageLookupByLibrary.simpleMessage("Change Address"),
+    "contestsHeader" : MessageLookupByLibrary.simpleMessage("Ballot Information"),
     "error" : MessageLookupByLibrary.simpleMessage("Error"),
+    "loading" : MessageLookupByLibrary.simpleMessage("Loading"),
     "lookup" : MessageLookupByLibrary.simpleMessage("Lookup"),
     "mainTitle" : MessageLookupByLibrary.simpleMessage("Ballot"),
+    "nullContests" : MessageLookupByLibrary.simpleMessage("Electon unknown"),
     "required" : MessageLookupByLibrary.simpleMessage("Required"),
     "signInWithGoogle" : MessageLookupByLibrary.simpleMessage("Sign in with Google"),
     "votingAddressLabel" : MessageLookupByLibrary.simpleMessage("Registered Voting Address"),

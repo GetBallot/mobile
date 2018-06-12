@@ -64,6 +64,7 @@ class Candidate {
 }
 
 class Contest {
+  String name;
   String type;
   String office;
   List<String> level;

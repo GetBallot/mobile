@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:chopper/chopper.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -80,6 +81,12 @@ class _VotingProfileState extends State<VotingProfile> {
       .map((snapshot) => snapshot["address"])
       .asyncMap((snapshot) => _fetch(snapshot));
 
+  Stream<DocumentSnapshot> _getElectionStream() => User
+      .getReference(firebaseUser)
+      .collection("elections")
+      .document("upcoming")
+      .snapshots();
+
   void _saveVoterInfo(VoterInfo voterInfo) async {
     User
         .getReference(widget.firebaseUser)
@@ -119,48 +126,100 @@ class _VotingProfileState extends State<VotingProfile> {
   @override
   Widget build(context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(BallotLocalizations.of(context).votingProfileTitle),
-          actions: <Widget>[
-            LoginPage.createLogoutButton(context, _auth, _googleSignIn),
-          ],
-        ),
-        body: StreamBuilder(
-            stream: _getUserStream(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                if (snapshot.data is Response<VoterInfo>) {
-                  VoterInfo voterInfo = snapshot.data.body;
-                  return _createVoterInfoBody(voterInfo);
-                }
-                RepresentativeInfo repInfo = snapshot.data.body;
-                return _createRepresentativeInfoBody(repInfo);
-              } else if (snapshot.hasError) {
-                return new Center(
-                  child: Container(
-                      child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      new Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                            _googleCivic.getErrorMessage(
-                                context, snapshot.error),
-                            style: TextStyle(fontSize: 20.0)),
-                      ),
-                      RaisedButton(
-                        child:
-                            Text(BallotLocalizations.of(context).changeAddress),
-                        onPressed: _goToAddressInput,
-                      )
-                    ],
-                  )),
-                );
-              }
+      appBar: AppBar(
+        title: Text(BallotLocalizations.of(context).votingProfileTitle),
+        actions: <Widget>[
+          LoginPage.createLogoutButton(context, _auth, _googleSignIn),
+        ],
+      ),
+      body: _createBody(),
+    );
+  }
 
-              // By default, show a loading spinner
-              return new Center(child: CircularProgressIndicator());
-            }));
+  Widget _createAddressHeader() => StreamBuilder(
+      stream: _getUserStream(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          if (snapshot.data is Response<VoterInfo>) {
+            VoterInfo voterInfo = snapshot.data.body;
+            return _createVotingAddressListTile(voterInfo.normalizedInput);
+          }
+          RepresentativeInfo repInfo = snapshot.data.body;
+          return _createVotingAddressListTile(repInfo.normalizedInput);
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Container(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                      _googleCivic.getErrorMessage(context, snapshot.error),
+                      style: TextStyle(fontSize: 20.0)),
+                ),
+                RaisedButton(
+                  child: Text(BallotLocalizations.of(context).changeAddress),
+                  onPressed: _goToAddressInput,
+                )
+              ],
+            )),
+          );
+        }
+
+        // By default, show a loading spinner
+        return Center(child: CircularProgressIndicator());
+      });
+
+  Widget _createBody() => StreamBuilder(
+      stream: _getElectionStream(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          DocumentSnapshot doc = snapshot.data;
+          final contests =
+              doc.exists && doc.data != null ? doc.data['contests'] : null;
+          return _createVoteInfoBody(contests, !doc.exists);
+        }
+        return Center(child: CircularProgressIndicator());
+      });
+
+  Widget _createVoteInfoBody(contests, loading) {
+    return ListView.builder(
+      itemCount: (contests == null ? 1 : contests.length) + 2,
+      itemBuilder: (context, index) {
+        final theme = Theme.of(context);
+        switch (index) {
+          case 0:
+            return _createAddressHeader();
+          case 1:
+            return new Container(
+              color: theme.secondaryHeaderColor,
+              child: ListTile(
+                  title: Text(BallotLocalizations.of(context).contestsHeader,
+                      style: TextStyle(
+                          color: theme.primaryColor,
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold))),
+            );
+          default:
+            if (loading) {
+              return new ListTile(
+                  leading: CircularProgressIndicator(),
+                  title: Text(BallotLocalizations.of(context).loading));
+            }
+            if (contests == null) {
+              return ListTile(
+                  title: Text(BallotLocalizations.of(context).nullContests));
+            } else {
+              final contest = contests[index - 2];
+              return ListTile(
+                  title: Text(
+                contest['name'],
+              ));
+            }
+        }
+      },
+    );
   }
 
   void _goToAddressInput() {
@@ -178,45 +237,5 @@ class _VotingProfileState extends State<VotingProfile> {
           icon: Icon(Icons.edit),
           onPressed: _goToAddressInput,
         ));
-  }
-
-  Widget _createVoterInfoBody(VoterInfo data) {
-    return ListView.builder(
-      itemCount: data.contests.length + 1,
-      itemBuilder: (context, index) {
-        if (index == 0) {
-          return _createVotingAddressListTile(data.normalizedInput);
-        } else {
-          final contest = data.contests[index - 1];
-          return ListTile(
-            title: Text(contest.referendumTitle == null
-                ? contest.office
-                : contest.referendumTitle),
-            subtitle: Text(contest.referendumSubtitle == null
-                ? contest.district.name
-                : contest.referendumSubtitle),
-          );
-        }
-      },
-    );
-  }
-
-  Widget _createRepresentativeInfoBody(RepresentativeInfo data) {
-    final keys = data.divisions.keys.toList();
-    return ListView.builder(
-      itemCount: keys.length + 1,
-      itemBuilder: (context, index) {
-        if (index == 0) {
-          return _createVotingAddressListTile(data.normalizedInput);
-        } else {
-          final ocd = keys[index - 1];
-          final name = data.divisions[ocd].name;
-          return ListTile(
-            title: Text(name),
-            subtitle: Text(ocd),
-          );
-        }
-      },
-    );
   }
 }

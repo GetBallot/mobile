@@ -70,6 +70,20 @@ class BallotLocalizations {
     );
   }
 
+  String get contestsHeader {
+    return Intl.message(
+      'Ballot Information',
+      name: 'contestsHeader',
+    );
+  }
+
+  String get nullContests {
+    return Intl.message(
+      'Electon unknown',
+      name: 'nullContests',
+    );
+  }
+
   String get required {
     return Intl.message(
       'Required',
@@ -81,6 +95,13 @@ class BallotLocalizations {
     return Intl.message(
       'Error',
       name: 'error',
+    );
+  }
+
+  String get loading {
+    return Intl.message(
+      'Loading',
+      name: 'loading',
     );
   }
 }

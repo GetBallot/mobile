@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-06-07T14:44:05.939266",
+  "@@last_modified": "2018-06-13T09:55:28.264191",
   "mainTitle": "Ballot",
   "@mainTitle": {
     "type": "text",
@@ -35,6 +35,16 @@
     "type": "text",
     "placeholders": {}
   },
+  "contestsHeader": "Ballot Information",
+  "@contestsHeader": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "nullContests": "Electon unknown",
+  "@nullContests": {
+    "type": "text",
+    "placeholders": {}
+  },
   "required": "Required",
   "@required": {
     "type": "text",
@@ -42,6 +52,11 @@
   },
   "error": "Error",
   "@error": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "loading": "Loading",
+  "@loading": {
     "type": "text",
     "placeholders": {}
   }

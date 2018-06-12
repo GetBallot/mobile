@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -29,6 +28,12 @@ class _AddressInputPageState extends State<AddressInputPage> {
   String _address;
 
   void _updateUser() async {
+    User
+        .getReference(widget.firebaseUser)
+        .collection("elections")
+        .document("upcoming")
+        .delete();
+
     User
         .getReference(widget.firebaseUser)
         .collection("triggers")
