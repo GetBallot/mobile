@@ -21,9 +21,9 @@ class Ballot extends StatelessWidget {
       return null;
     }
 
-    DocumentSnapshot snapshot = await User.getReference(firebaseUser).get();
+    DocumentSnapshot snapshot = await User.getAddressRef(firebaseUser).get();
 
-    return User(firebaseUser, snapshot.data);
+    return User(firebaseUser, snapshot);
   }
 
   @override

@@ -17,7 +17,7 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => new _LoginPageState();
 
   static Widget onLogin(User user) {
-    if (user.data != null && user.data["address"] != null) {
+    if (user != null && user.address != null) {
       return VotingProfile(firebaseUser: user.firebaseUser);
     } else {
       return AddressInputPage(firebaseUser: user.firebaseUser, firstTime: true);
@@ -56,8 +56,8 @@ class _LoginPageState extends State<LoginPage> {
       idToken: googleAuth.idToken,
     );
 
-    DocumentSnapshot snapshot = await User.getReference(firebaseUser).get();
-    return User(firebaseUser, snapshot.data);
+    DocumentSnapshot snapshot = await User.getAddressRef(firebaseUser).get();
+    return User(firebaseUser, snapshot);
   }
 
   @override

@@ -29,21 +29,25 @@ class _AddressInputPageState extends State<AddressInputPage> {
 
   void _updateUser() async {
     User
-        .getReference(widget.firebaseUser)
+        .getRef(widget.firebaseUser)
         .collection("elections")
         .document("upcoming")
         .delete();
 
     User
-        .getReference(widget.firebaseUser)
+        .getRef(widget.firebaseUser)
         .collection("triggers")
         .document("address")
         .setData({"address": _address});
 
-    var route = MaterialPageRoute(
-      builder: (context) => VotingProfile(firebaseUser: widget.firebaseUser),
-    );
-    Navigator.of(context).pushReplacement(route);
+    if (widget.firstTime) {
+      var route = MaterialPageRoute(
+        builder: (context) => VotingProfile(firebaseUser: widget.firebaseUser),
+      );
+      Navigator.of(context).pushReplacement(route);
+    } else {
+      Navigator.of(context).pop();
+    }
   }
 
   @override

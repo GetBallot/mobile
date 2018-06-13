@@ -74,22 +74,20 @@ class _VotingProfileState extends State<VotingProfile> {
   }
 
   Stream<Response> _getUserStream() => User
-      .getReference(firebaseUser)
-      .collection("triggers")
-      .document("address")
+      .getAddressRef(firebaseUser)
       .snapshots()
       .map((snapshot) => snapshot["address"])
       .asyncMap((snapshot) => _fetch(snapshot));
 
   Stream<DocumentSnapshot> _getElectionStream() => User
-      .getReference(firebaseUser)
+      .getRef(firebaseUser)
       .collection("elections")
       .document("upcoming")
       .snapshots();
 
   void _saveVoterInfo(VoterInfo voterInfo) async {
     User
-        .getReference(widget.firebaseUser)
+        .getRef(widget.firebaseUser)
         .collection("triggers")
         .document("voterinfo")
         .setData({"lang": _getLang(), "voterinfo": voterInfo.serialize()});
@@ -97,7 +95,7 @@ class _VotingProfileState extends State<VotingProfile> {
 
   void _deleteVoterInfo() async {
     User
-        .getReference(widget.firebaseUser)
+        .getRef(widget.firebaseUser)
         .collection("triggers")
         .document("voterinfo")
         .delete();
@@ -111,7 +109,7 @@ class _VotingProfileState extends State<VotingProfile> {
     }
 
     User
-        .getReference(widget.firebaseUser)
+        .getRef(widget.firebaseUser)
         .collection("triggers")
         .document("representatives")
         .setData(data);
