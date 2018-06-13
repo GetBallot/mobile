@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-06-13T09:55:28.264191",
+  "@@last_modified": "2018-06-14T23:37:59.027041",
   "mainTitle": "Ballot",
   "@mainTitle": {
     "type": "text",
@@ -40,8 +40,18 @@
     "type": "text",
     "placeholders": {}
   },
-  "nullContests": "Electon unknown",
+  "nullContests": "Election unknown",
   "@nullContests": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "contestTitle": "Contest",
+  "@contestTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "nullCandidates": "No candidates",
+  "@nullCandidates": {
     "type": "text",
     "placeholders": {}
   },

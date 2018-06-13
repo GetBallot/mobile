@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import 'chopper/google_civic.dart';
 import 'localizations.dart';
 import 'login.dart';
 import 'user.dart';
@@ -86,9 +87,13 @@ class _AddressInputPageState extends State<AddressInputPage> {
                   },
                 ),
               ),
-              Row(
+              Wrap(
                 children: <Widget>[
-                  Text('Examples:'),
+                  _createAddressExampleButton(
+                      "Sample",
+                      GoogleCivic.SAMPLE_VOTER_INFO_ADDRESS,
+                      theme,
+                      addressController),
                   _createAddressExampleButton(
                       "Castle Rock",
                       "488 Black Feather Loop, Castle Rock, CO",
@@ -102,6 +107,11 @@ class _AddressInputPageState extends State<AddressInputPage> {
                   _createAddressExampleButton(
                       "Virginia",
                       "1716 Winder St, Richmond, VA 23220",
+                      theme,
+                      addressController),
+                  _createAddressExampleButton(
+                      "Oklahoma",
+                      "5618 S Quebec Ave, Tulsa, OK 74135",
                       theme,
                       addressController),
                 ],

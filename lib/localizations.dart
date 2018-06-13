@@ -79,8 +79,22 @@ class BallotLocalizations {
 
   String get nullContests {
     return Intl.message(
-      'Electon unknown',
+      'Election unknown',
       name: 'nullContests',
+    );
+  }
+
+  String get contestTitle {
+    return Intl.message(
+      'Contest',
+      name: 'contestTitle',
+    );
+  }
+
+  String get nullCandidates {
+    return Intl.message(
+      'No candidates',
+      name: 'nullCandidates',
     );
   }
 

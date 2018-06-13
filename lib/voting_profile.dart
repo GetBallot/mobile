@@ -11,9 +11,11 @@ import 'address_input.dart';
 import 'chopper/google_civic.dart';
 import 'chopper/jaguar_serializer.dart';
 import 'chopper/models/civic_info.dart';
+import 'contest.dart';
 import 'localizations.dart';
 import 'login.dart';
 import 'user.dart';
+import 'widgets.dart';
 
 class VotingProfile extends StatefulWidget {
   final FirebaseUser firebaseUser;
@@ -174,50 +176,71 @@ class _VotingProfileState extends State<VotingProfile> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           DocumentSnapshot doc = snapshot.data;
+          final election =
+              doc.exists && doc.data != null ? doc.data['election'] : null;
           final contests =
               doc.exists && doc.data != null ? doc.data['contests'] : null;
-          return _createVoteInfoBody(contests, !doc.exists);
+          return _createVoteInfoBody(election, contests, !doc.exists);
         }
         return Center(child: CircularProgressIndicator());
       });
 
-  Widget _createVoteInfoBody(contests, loading) {
+  Widget _createVoteInfoBody(election, contests, loading) {
+    var headerCount = 1; // address header
+    if (loading) {
+      headerCount += 1; // loading indicator
+    }
+
+    var contestsCount = _getContestsCount(contests);
     return ListView.builder(
-      itemCount: (contests == null ? 1 : contests.length) + 2,
+      itemCount: headerCount + contestsCount,
       itemBuilder: (context, index) {
-        final theme = Theme.of(context);
         switch (index) {
           case 0:
             return _createAddressHeader();
           case 1:
-            return new Container(
-              color: theme.secondaryHeaderColor,
-              child: ListTile(
-                  title: Text(BallotLocalizations.of(context).contestsHeader,
-                      style: TextStyle(
-                          color: theme.primaryColor,
-                          fontSize: 18.0,
-                          fontWeight: FontWeight.bold))),
-            );
-          default:
             if (loading) {
-              return new ListTile(
+              return ListTile(
                   leading: CircularProgressIndicator(),
                   title: Text(BallotLocalizations.of(context).loading));
             }
-            if (contests == null) {
-              return ListTile(
-                  title: Text(BallotLocalizations.of(context).nullContests));
-            } else {
-              final contest = contests[index - 2];
-              return ListTile(
-                  title: Text(
-                contest['name'],
-              ));
-            }
+            return _getContestItem(context, contests, index - headerCount);
+          default:
+            return _getContestItem(context, contests, index - headerCount);
         }
       },
     );
+  }
+
+  int _getContestsCount(contests) =>
+      (contests == null) ? 0 : contests.length + 1;
+  Widget _getContestItem(context, contests, index) {
+    final theme = Theme.of(context);
+    if (index == 0) {
+      return getHeader(theme, BallotLocalizations.of(context).contestsHeader);
+    }
+
+    if (contests == null) {
+      return ListTile(
+          title: Text(BallotLocalizations.of(context).nullContests));
+    }
+
+    final contestIndex = index - 1;
+    final contest = contests[contestIndex];
+    return ListTile(
+        title: Text(contest['name']),
+        onTap: () {
+          final ref = User
+              .getRef(firebaseUser)
+              .collection('elections')
+              .document('upcoming');
+          Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => ContestPage(
+                    firebaseUser: widget.firebaseUser,
+                    ref: ref,
+                    contestIndex: contestIndex),
+              ));
+        });
   }
 
   void _goToAddressInput() {

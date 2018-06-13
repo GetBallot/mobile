@@ -305,6 +305,7 @@ abstract class _$ContestSerializer implements Serializer<Contest> {
     Map<String, dynamic> ret;
     if (model != null) {
       ret = <String, dynamic>{};
+      setNullableValue(ret, 'name', model.name);
       setNullableValue(ret, 'type', model.type);
       setNullableValue(ret, 'office', model.office);
       setNullableValue(ret, 'level',
@@ -340,6 +341,7 @@ abstract class _$ContestSerializer implements Serializer<Contest> {
       return null;
     }
     final obj = model ?? new Contest();
+    obj.name = map['name'] as String;
     obj.type = map['type'] as String;
     obj.office = map['office'] as String;
     obj.level = nullableIterableMapper<String>(

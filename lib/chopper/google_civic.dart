@@ -16,20 +16,24 @@ abstract class GoogleCivicDefinition {
 
   @Get(url: "/voterinfo")
   Future<Response<VoterInfo>> voterinfo(
-      @Query() String address, @Query() String key);
+      @Query() String address, @Query() int electionId, @Query() String key);
 }
 
 class GoogleCivic {
+  static const SAMPLE_VOTER_INFO_ADDRESS =
+      "1263 Pacific Avenue, Kansas City, KS 66102";
+
   final GoogleCivicService service;
 
   GoogleCivic(this.service);
 
   Future<Response<RepresentativeInfo>> representatives(String address) {
-    return service.representatives(address, false, GOOGLE_API_KEY);
+    return service.representatives(address, true, GOOGLE_API_KEY);
   }
 
   Future<Response<VoterInfo>> voterinfo(String address) {
-    return service.voterinfo(address, GOOGLE_API_KEY);
+    int electionId = (address == SAMPLE_VOTER_INFO_ADDRESS) ? 2000 : null;
+    return service.voterinfo(address, electionId, GOOGLE_API_KEY);
   }
 
   String getErrorMessage(context, Response<String> response) {
