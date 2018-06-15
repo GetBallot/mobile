@@ -24,4 +24,11 @@ class User {
     }
     return getRef(firebaseUser).collection('triggers').document('address');
   }
+
+  static DocumentReference getFavCandidatesRef(FirebaseUser firebaseUser) {
+    if (firebaseUser == null) {
+      return null;
+    }
+    return getRef(firebaseUser).collection('favs').document('candidates');
+  }
 }
