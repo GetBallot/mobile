@@ -105,8 +105,8 @@ class _AddressInputPageState extends State<AddressInputPage> {
                       theme,
                       addressController),
                   _createAddressExampleButton(
-                      "Virginia",
-                      "1716 Winder St, Richmond, VA 23220",
+                      "Kansas",
+                      "1924 S Millwood Ave, Wichita, KS 67213",
                       theme,
                       addressController),
                   _createAddressExampleButton(
