@@ -24,6 +24,8 @@ class ContestPage extends StatefulWidget {
 class _ContestPageState extends State<ContestPage> {
   _ContestPageState();
 
+  Map<String, dynamic> favs = {};
+
   @override
   Widget build(context) {
     return Scaffold(
@@ -41,17 +43,16 @@ class _ContestPageState extends State<ContestPage> {
       DocumentSnapshot electionSnapshot = results[0];
 
       DocumentSnapshot favsSnapshot = results[1];
+      favs = favsSnapshot.exists ? favsSnapshot.data : {};
 
       if (electionSnapshot.exists) {
         final contest = electionSnapshot.data['contests'][widget.contestIndex];
         if (contest != null) {
-          final map = favsSnapshot.exists ? favsSnapshot.data : null;
           final candidates = contest['candidates'];
           candidates.forEach((candidate) {
-            final favData = map == null ? null : map[candidate['favId']];
-            candidate['fav'] = map == null
-                ? false
-                : favData == null ? false : favData['fav'] ?? false;
+            final favData = favs[candidate['favId']];
+            candidate['fav'] =
+                favData == null ? false : favData['fav'] ?? false;
           });
         }
       }
@@ -116,9 +117,12 @@ class _ContestPageState extends State<ContestPage> {
   }
 
   void _setCandidateFavorite(String favId, bool oldValue) {
-    final data = {'fav': !oldValue};
-    User
-        .getFavCandidatesRef(widget.firebaseUser)
-        .setData({favId: data}, merge: true);
+    if (oldValue) {
+      favs.remove(favId);
+    } else {
+      favs[favId] = {'fav': true};
+    }
+
+    User.getFavCandidatesRef(widget.firebaseUser).setData(favs);
   }
 }
