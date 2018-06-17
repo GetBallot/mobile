@@ -204,9 +204,11 @@ class _VotingProfileState extends State<VotingProfile> {
                   leading: CircularProgressIndicator(),
                   title: Text(BallotLocalizations.of(context).loading));
             }
-            return _getContestItem(context, contests, index - headerCount);
+            return _getContestItem(
+                context, election, contests, index - headerCount);
           default:
-            return _getContestItem(context, contests, index - headerCount);
+            return _getContestItem(
+                context, election, contests, index - headerCount);
         }
       },
     );
@@ -214,7 +216,7 @@ class _VotingProfileState extends State<VotingProfile> {
 
   int _getContestsCount(contests) =>
       (contests == null) ? 0 : contests.length + 1;
-  Widget _getContestItem(context, contests, index) {
+  Widget _getContestItem(context, election, contests, index) {
     final theme = Theme.of(context);
     if (index == 0) {
       return getHeader(theme, BallotLocalizations.of(context).contestsHeader);
@@ -238,6 +240,7 @@ class _VotingProfileState extends State<VotingProfile> {
                 builder: (context) => ContestPage(
                     firebaseUser: widget.firebaseUser,
                     ref: ref,
+                    electionId: election['id'],
                     contestIndex: contestIndex),
               ));
         });

@@ -11,10 +11,16 @@ import 'widgets.dart';
 
 class ContestPage extends StatefulWidget {
   final FirebaseUser firebaseUser;
+  final String electionId;
   final DocumentReference ref;
   final int contestIndex;
 
-  ContestPage({Key key, this.firebaseUser, this.ref, this.contestIndex})
+  ContestPage(
+      {Key key,
+      this.firebaseUser,
+      this.electionId,
+      this.ref,
+      this.contestIndex})
       : super(key: key);
 
   @override
@@ -39,25 +45,75 @@ class _ContestPageState extends State<ContestPage> {
   Stream _createStream() {
     Stream<DocumentSnapshot> favsStream =
         User.getFavCandidatesRef(widget.firebaseUser).snapshots();
-    return StreamZip([widget.ref.snapshots(), favsStream]).map((results) {
+    final inputStreams = [widget.ref.snapshots(), favsStream];
+
+    if (widget.electionId != null) {
+      inputStreams.add(Firestore.instance
+          .collection('elections')
+          .document(widget.electionId)
+          .snapshots());
+    }
+
+    return StreamZip(inputStreams).map((results) {
       DocumentSnapshot electionSnapshot = results[0];
 
       DocumentSnapshot favsSnapshot = results[1];
       favs = favsSnapshot.exists ? favsSnapshot.data : {};
+
+      DocumentSnapshot supplementSnapshot =
+          results.length >= 3 ? results[2] : null;
+      final supplement =
+          (supplementSnapshot != null && supplementSnapshot.exists)
+              ? supplementSnapshot.data
+              : null;
+      Map favIdMap = supplement == null ? {} : supplement['favIdMap'] ?? {};
 
       if (electionSnapshot.exists) {
         final contest = electionSnapshot.data['contests'][widget.contestIndex];
         if (contest != null) {
           final candidates = contest['candidates'];
           candidates.forEach((candidate) {
-            final favData = favs[candidate['favId']];
-            candidate['fav'] =
-                favData == null ? false : favData['fav'] ?? false;
+            final favId = candidate['favId'];
+            if (favIdMap.containsKey(favId) && favId != favIdMap[favId]) {
+              _updateFav(candidate, favIdMap, favIdMap[favId]);
+            } else {
+              candidate['fav'] = _isFav(candidate['favId']);
+            }
           });
         }
       }
 
       return electionSnapshot;
+    });
+  }
+
+  bool _isFav(favId) {
+    if (favId == null) {
+      return false;
+    }
+    Map favData = favs[favId];
+    return favData == null ? false : favData['fav'] ?? false;
+  }
+
+  void _updateFav(Map candidate, favIdMap, canonicalFavId) {
+    if (candidate == null || favIdMap == null || canonicalFavId == null) {
+      return;
+    }
+    if (candidate.containsKey('fav')) {
+      return;
+    }
+    favIdMap.forEach((key, value) {
+      if (value == canonicalFavId) {
+        bool oldFav = _isFav(key);
+        bool fav = _isFav(canonicalFavId);
+
+        candidate['fav'] = oldFav || fav;
+        candidate['favId'] = canonicalFavId;
+        if (oldFav) {
+          candidate['oldFavId'] = key;
+        }
+        return;
+      }
     });
   }
 
@@ -105,8 +161,7 @@ class _ContestPageState extends State<ContestPage> {
                         color: theme.accentColor),
                     onTap: () {
                       setState(() {
-                        _setCandidateFavorite(
-                            candidate['favId'], candidate['fav']);
+                        _setCandidateFavorite(candidate);
                       });
                     }),
               );
@@ -116,8 +171,13 @@ class _ContestPageState extends State<ContestPage> {
     );
   }
 
-  void _setCandidateFavorite(String favId, bool oldValue) {
-    if (oldValue) {
+  void _setCandidateFavorite(Map candidate) {
+    if (candidate.containsKey('oldFavId')) {
+      favs.remove(candidate['oldFavId']);
+    }
+
+    final favId = candidate['favId'];
+    if (candidate['fav']) {
       favs.remove(favId);
     } else {
       favs[favId] = {'fav': true};
