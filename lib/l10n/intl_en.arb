@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-06-14T23:37:59.027041",
+  "@@last_modified": "2018-06-18T14:08:34.263082",
   "mainTitle": "Ballot",
   "@mainTitle": {
     "type": "text",
@@ -52,6 +52,11 @@
   },
   "nullCandidates": "No candidates",
   "@nullCandidates": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "candidateTitle": "Candidate",
+  "@candidateTitle": {
     "type": "text",
     "placeholders": {}
   },

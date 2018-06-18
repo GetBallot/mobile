@@ -98,6 +98,13 @@ class BallotLocalizations {
     );
   }
 
+  String get candidateTitle {
+    return Intl.message(
+      'Candidate',
+      name: 'candidateTitle',
+    );
+  }
+
   String get required {
     return Intl.message(
       'Required',

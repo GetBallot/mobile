@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'candidate.dart';
 import 'favorites.dart';
 import 'localizations.dart';
 import 'user.dart';
@@ -117,38 +118,41 @@ class _ContestPageState extends State<ContestPage> {
             } else {
               final candidateIndex = index - 1;
               final candidate = candidates[candidateIndex];
-              return ListTile(
-                title: Text(
-                  candidate['name'],
+              return new GestureDetector(
+                child: ListTile(
+                  title: Text(
+                    candidate['name'],
+                  ),
+                  trailing: GestureDetector(
+                      child: Icon(
+                          candidate['fav'] ? Icons.star : Icons.star_border,
+                          color: theme.accentColor),
+                      onTap: () {
+                        setState(() {
+                          Favorites.setCandidateFavorite(
+                              favs, widget.firebaseUser, candidate);
+                        });
+                      }),
                 ),
-                trailing: new GestureDetector(
-                    child: Icon(
-                        candidate['fav'] ? Icons.star : Icons.star_border,
-                        color: theme.accentColor),
-                    onTap: () {
-                      setState(() {
-                        _setCandidateFavorite(candidate);
-                      });
-                    }),
+                onTap: () {
+                  final ref = User
+                      .getRef(widget.firebaseUser)
+                      .collection('elections')
+                      .document('upcoming');
+                  Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => CandidatePage(
+                              firebaseUser: widget.firebaseUser,
+                              ref: ref,
+                              electionId: widget.electionId,
+                              contestIndex: widget.contestIndex,
+                              candidateIndex: candidateIndex,
+                            ),
+                      ));
+                },
               );
             }
         }
       },
     );
-  }
-
-  void _setCandidateFavorite(Map candidate) {
-    if (candidate.containsKey('oldFavId')) {
-      favs.remove(candidate['oldFavId']);
-    }
-
-    final favId = candidate['favId'];
-    if (candidate['fav']) {
-      favs.remove(favId);
-    } else {
-      favs[favId] = {'fav': true};
-    }
-
-    User.getFavCandidatesRef(widget.firebaseUser).setData(favs);
   }
 }
