@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'favorites.dart';
 import 'localizations.dart';
 import 'user.dart';
 import 'widgets.dart';
@@ -73,47 +74,12 @@ class _ContestPageState extends State<ContestPage> {
         if (contest != null) {
           final candidates = contest['candidates'];
           candidates.forEach((candidate) {
-            final favId = candidate['favId'];
-            if (favIdMap.containsKey(favId) && favId != favIdMap[favId]) {
-              _updateFav(candidate, favIdMap, favIdMap[favId]);
-            } else {
-              candidate['fav'] = _isFav(candidate['favId']);
-            }
+            Favorites.updateCandidate(favs, favIdMap, candidate);
           });
         }
       }
 
       return electionSnapshot;
-    });
-  }
-
-  bool _isFav(favId) {
-    if (favId == null) {
-      return false;
-    }
-    Map favData = favs[favId];
-    return favData == null ? false : favData['fav'] ?? false;
-  }
-
-  void _updateFav(Map candidate, favIdMap, canonicalFavId) {
-    if (candidate == null || favIdMap == null || canonicalFavId == null) {
-      return;
-    }
-    if (candidate.containsKey('fav')) {
-      return;
-    }
-    favIdMap.forEach((key, value) {
-      if (value == canonicalFavId) {
-        bool oldFav = _isFav(key);
-        bool fav = _isFav(canonicalFavId);
-
-        candidate['fav'] = oldFav || fav;
-        candidate['favId'] = canonicalFavId;
-        if (oldFav) {
-          candidate['oldFavId'] = key;
-        }
-        return;
-      }
     });
   }
 
