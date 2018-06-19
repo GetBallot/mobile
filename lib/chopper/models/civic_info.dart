@@ -15,7 +15,7 @@ class Address {
 
   String toString() {
     final buf = StringBuffer();
-    buf.write([locationName, line1, line2, line3, city, state]
+    buf.write([line1, line2, line3, city, state]
         .where((s) => s != null && s.trim().length != 0)
         .join(", "));
     if (zip != null) {
@@ -23,16 +23,28 @@ class Address {
     }
     return buf.toString().trim();
   }
+
+  static String format(fields) {
+    final buf = StringBuffer();
+    buf.write(['line1', 'line2', 'line3', 'city', 'state']
+        .map((key) => fields[key])
+        .where((s) => s != null && s.trim().length != 0)
+        .join(", "));
+    if (fields['zip'] != null) {
+      buf.writeAll([" ", fields['zip']]);
+    }
+    return buf.toString().trim();
+  }
 }
 
 class RepresentativeInfo {
-  static final serializer = RepresentativeInfoSerializer();
+  static final _serializer = RepresentativeInfoSerializer();
 
   Address normalizedInput;
   Map<String, Division> divisions;
 
   Map serialize() {
-    final map = serializer.serialize(this);
+    final map = _serializer.serialize(this);
     map["input"] = normalizedInput.toString();
     return map;
   }
@@ -142,7 +154,7 @@ class Election {
 }
 
 class VoterInfo {
-  static final serializer = VoterInfoSerializer();
+  static final _serializer = VoterInfoSerializer();
 
   Election election;
   Address normalizedInput;
@@ -154,7 +166,7 @@ class VoterInfo {
   bool mailOnly;
 
   Map serialize() {
-    final map = serializer.serialize(this);
+    final map = _serializer.serialize(this);
     map["input"] = normalizedInput.toString();
     return map;
   }

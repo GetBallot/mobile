@@ -24,6 +24,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "changeAddress" : MessageLookupByLibrary.simpleMessage("Change Address"),
     "contestTitle" : MessageLookupByLibrary.simpleMessage("Contest"),
     "contestsHeader" : MessageLookupByLibrary.simpleMessage("Ballot Information"),
+    "dropOffLocationHeader" : MessageLookupByLibrary.simpleMessage("Dropoff Location"),
+    "dropOffLocationsHeader" : MessageLookupByLibrary.simpleMessage("Dropoff Locations"),
     "error" : MessageLookupByLibrary.simpleMessage("Error"),
     "loading" : MessageLookupByLibrary.simpleMessage("Loading"),
     "lookup" : MessageLookupByLibrary.simpleMessage("Lookup"),

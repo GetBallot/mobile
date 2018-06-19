@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'address_input.dart';
 import 'chopper/google_civic.dart';
@@ -175,46 +176,91 @@ class _VotingProfileState extends State<VotingProfile> {
       stream: _getElectionStream(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          DocumentSnapshot doc = snapshot.data;
-          final election =
-              doc.exists && doc.data != null ? doc.data['election'] : null;
-          final contests =
-              doc.exists && doc.data != null ? doc.data['contests'] : null;
-          return _createVoteInfoBody(election, contests, !doc.exists);
+          return _createVoteInfoBody(snapshot.data);
         }
         return Center(child: CircularProgressIndicator());
       });
 
-  Widget _createVoteInfoBody(election, contests, loading) {
+  Widget _createVoteInfoBody(DocumentSnapshot doc) {
+    final election =
+        doc.exists && doc.data != null ? doc.data['election'] : null;
+    final dropOffLocations =
+        doc.exists && doc.data != null ? doc.data['dropOffLocations'] : null;
+    final contests =
+        doc.exists && doc.data != null ? doc.data['contests'] : null;
+    final loading = !doc.exists;
+
     var headerCount = 2; // address header
     if (loading) {
       headerCount += 1; // loading indicator
     }
 
+    final dropOffLocationsCount = _getPollingStationsCount(dropOffLocations);
     final contestsCount = _getContestsCount(contests);
     final theme = Theme.of(context);
     return ListView.builder(
-      itemCount: headerCount + contestsCount,
+      itemCount: headerCount + dropOffLocationsCount + contestsCount,
       itemBuilder: (context, index) {
-        switch (index) {
-          case 0:
-            return getHeader(
-                theme, BallotLocalizations.of(context).votingAddressLabel);
-          case 1:
-            return _createAddressHeader();
-          case 2:
-            if (loading) {
-              return ListTile(
-                  leading: CircularProgressIndicator(),
-                  title: Text(BallotLocalizations.of(context).loading));
-            }
-            return _getContestItem(
-                context, election, contests, index - headerCount);
-          default:
-            return _getContestItem(
-                context, election, contests, index - headerCount);
+        if (index == 0) {
+          return getHeader(
+              theme, BallotLocalizations.of(context).votingAddressLabel);
+        }
+        if (index == 1) {
+          return _createAddressHeader();
+        }
+        if (index == 2) {
+          if (loading) {
+            return ListTile(
+                leading: CircularProgressIndicator(),
+                title: Text(BallotLocalizations.of(context).loading));
+          }
+          if (dropOffLocationsCount > 0) {
+            return _getPollingStationItem(
+                context,
+                BallotLocalizations.of(context).dropOffLocationHeader,
+                dropOffLocations,
+                index - headerCount);
+          } else {
+            return _getContestItem(context, election, contests,
+                index - headerCount - dropOffLocationsCount);
+          }
+        }
+        if (index - headerCount < dropOffLocationsCount) {
+          return _getPollingStationItem(
+              context,
+              BallotLocalizations.of(context).dropOffLocationHeader,
+              dropOffLocations,
+              index - headerCount);
+        } else {
+          return _getContestItem(context, election, contests,
+              index - headerCount - dropOffLocationsCount);
         }
       },
+    );
+  }
+
+  int _getPollingStationsCount(items) =>
+      (items == null || items.length == 0) ? 0 : 2;
+  Widget _getPollingStationItem(context, header, stations, index) {
+    final theme = Theme.of(context);
+    if (index == 0) {
+      return getHeader(theme, header);
+    }
+    final stationIndex = index - 1;
+    final station = stations[stationIndex];
+
+    final String address = Address.format(station['address']);
+    return ListTile(
+      trailing: IconButton(
+        icon: Icon(Icons.map),
+        onPressed: () {
+          final url = "https://www.google.com/maps?q=" +
+              Uri.encodeQueryComponent(address);
+          _launchUrl(url);
+        },
+      ),
+      title: Text(station['address']['locationName']),
+      subtitle: Text(address),
     );
   }
 
@@ -264,5 +310,11 @@ class _VotingProfileState extends State<VotingProfile> {
           icon: Icon(Icons.edit),
           onPressed: _goToAddressInput,
         ));
+  }
+
+  void _launchUrl(url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    }
   }
 }

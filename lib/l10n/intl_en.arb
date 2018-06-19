@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-06-18T14:08:34.263082",
+  "@@last_modified": "2018-06-19T09:17:16.949893",
   "mainTitle": "Ballot",
   "@mainTitle": {
     "type": "text",
@@ -32,6 +32,16 @@
   },
   "changeAddress": "Change Address",
   "@changeAddress": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "dropOffLocationHeader": "Dropoff Location",
+  "@dropOffLocationHeader": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "dropOffLocationsHeader": "Dropoff Locations",
+  "@dropOffLocationsHeader": {
     "type": "text",
     "placeholders": {}
   },

@@ -70,6 +70,20 @@ class BallotLocalizations {
     );
   }
 
+  String get dropOffLocationHeader {
+    return Intl.message(
+      'Dropoff Location',
+      name: 'dropOffLocationHeader',
+    );
+  }
+
+  String get dropOffLocationsHeader {
+    return Intl.message(
+      'Dropoff Locations',
+      name: 'dropOffLocationsHeader',
+    );
+  }
+
   String get contestsHeader {
     return Intl.message(
       'Ballot Information',
