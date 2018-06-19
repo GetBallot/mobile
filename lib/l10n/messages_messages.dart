@@ -20,21 +20,28 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static _notInlinedMessages(_) => <String, Function> {
     "addressInputTitle" : MessageLookupByLibrary.simpleMessage("Voting Address"),
+    "all" : MessageLookupByLibrary.simpleMessage("All"),
     "candidateTitle" : MessageLookupByLibrary.simpleMessage("Candidate"),
     "changeAddress" : MessageLookupByLibrary.simpleMessage("Change Address"),
     "contestTitle" : MessageLookupByLibrary.simpleMessage("Contest"),
     "contestsHeader" : MessageLookupByLibrary.simpleMessage("Ballot Information"),
-    "dropOffLocationHeader" : MessageLookupByLibrary.simpleMessage("Dropoff Location"),
-    "dropOffLocationsHeader" : MessageLookupByLibrary.simpleMessage("Dropoff Locations"),
+    "dropOffDatesLabel" : MessageLookupByLibrary.simpleMessage("Drop-off Location Dates"),
+    "dropOffHoursLabel" : MessageLookupByLibrary.simpleMessage("Drop-off Location Hours"),
+    "earlyVoteSiteDatesLabel" : MessageLookupByLibrary.simpleMessage("Early Voting Dates"),
+    "earlyVoteSiteHoursLabel" : MessageLookupByLibrary.simpleMessage("Early Voting Hours"),
     "error" : MessageLookupByLibrary.simpleMessage("Error"),
     "loading" : MessageLookupByLibrary.simpleMessage("Loading"),
     "lookup" : MessageLookupByLibrary.simpleMessage("Lookup"),
     "mainTitle" : MessageLookupByLibrary.simpleMessage("Ballot"),
     "nullCandidates" : MessageLookupByLibrary.simpleMessage("No candidates"),
     "nullContests" : MessageLookupByLibrary.simpleMessage("Election unknown"),
+    "pollingStationDatesLabel" : MessageLookupByLibrary.simpleMessage("Voting Dates"),
+    "pollingStationHoursLabel" : MessageLookupByLibrary.simpleMessage("Voting Hours"),
     "required" : MessageLookupByLibrary.simpleMessage("Required"),
     "signInWithGoogle" : MessageLookupByLibrary.simpleMessage("Sign in with Google"),
     "votingAddressLabel" : MessageLookupByLibrary.simpleMessage("Registered Voting Address"),
+    "votingLocationTitle" : MessageLookupByLibrary.simpleMessage("Voting Location"),
+    "votingLocationsTitle" : MessageLookupByLibrary.simpleMessage("Voting Locations"),
     "votingProfileTitle" : MessageLookupByLibrary.simpleMessage("Voting Profile")
   };
 }

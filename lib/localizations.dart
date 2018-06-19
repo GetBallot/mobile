@@ -70,17 +70,59 @@ class BallotLocalizations {
     );
   }
 
-  String get dropOffLocationHeader {
+  String get votingLocationTitle {
     return Intl.message(
-      'Dropoff Location',
-      name: 'dropOffLocationHeader',
+      'Voting Location',
+      name: 'votingLocationTitle',
     );
   }
 
-  String get dropOffLocationsHeader {
+  String get votingLocationsTitle {
     return Intl.message(
-      'Dropoff Locations',
-      name: 'dropOffLocationsHeader',
+      'Voting Locations',
+      name: 'votingLocationsTitle',
+    );
+  }
+
+  String get pollingStationHoursLabel {
+    return Intl.message(
+      'Voting Hours',
+      name: 'pollingStationHoursLabel',
+    );
+  }
+
+  String get earlyVoteSiteHoursLabel {
+    return Intl.message(
+      'Early Voting Hours',
+      name: 'earlyVoteSiteHoursLabel',
+    );
+  }
+
+  String get dropOffHoursLabel {
+    return Intl.message(
+      'Drop-off Location Hours',
+      name: 'dropOffHoursLabel',
+    );
+  }
+
+  String get pollingStationDatesLabel {
+    return Intl.message(
+      'Voting Dates',
+      name: 'pollingStationDatesLabel',
+    );
+  }
+
+  String get earlyVoteSiteDatesLabel {
+    return Intl.message(
+      'Early Voting Dates',
+      name: 'earlyVoteSiteDatesLabel',
+    );
+  }
+
+  String get dropOffDatesLabel {
+    return Intl.message(
+      'Drop-off Location Dates',
+      name: 'dropOffDatesLabel',
     );
   }
 
@@ -130,6 +172,13 @@ class BallotLocalizations {
     return Intl.message(
       'Error',
       name: 'error',
+    );
+  }
+
+  String get all {
+    return Intl.message(
+      'All',
+      name: 'all',
     );
   }
 

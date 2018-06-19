@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-06-19T09:17:16.949893",
+  "@@last_modified": "2018-06-19T14:15:30.335825",
   "mainTitle": "Ballot",
   "@mainTitle": {
     "type": "text",
@@ -35,13 +35,43 @@
     "type": "text",
     "placeholders": {}
   },
-  "dropOffLocationHeader": "Dropoff Location",
-  "@dropOffLocationHeader": {
+  "votingLocationTitle": "Voting Location",
+  "@votingLocationTitle": {
     "type": "text",
     "placeholders": {}
   },
-  "dropOffLocationsHeader": "Dropoff Locations",
-  "@dropOffLocationsHeader": {
+  "votingLocationsTitle": "Voting Locations",
+  "@votingLocationsTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "pollingStationHoursLabel": "Voting Hours",
+  "@pollingStationHoursLabel": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "earlyVoteSiteHoursLabel": "Early Voting Hours",
+  "@earlyVoteSiteHoursLabel": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "dropOffHoursLabel": "Drop-off Location Hours",
+  "@dropOffHoursLabel": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "pollingStationDatesLabel": "Voting Dates",
+  "@pollingStationDatesLabel": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "earlyVoteSiteDatesLabel": "Early Voting Dates",
+  "@earlyVoteSiteDatesLabel": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "dropOffDatesLabel": "Drop-off Location Dates",
+  "@dropOffDatesLabel": {
     "type": "text",
     "placeholders": {}
   },
@@ -77,6 +107,11 @@
   },
   "error": "Error",
   "@error": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "all": "All",
+  "@all": {
     "type": "text",
     "placeholders": {}
   },

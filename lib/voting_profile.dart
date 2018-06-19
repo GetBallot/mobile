@@ -6,9 +6,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'address_input.dart';
+import 'polling_station.dart';
 import 'chopper/google_civic.dart';
 import 'chopper/jaguar_serializer.dart';
 import 'chopper/models/civic_info.dart';
@@ -184,8 +184,6 @@ class _VotingProfileState extends State<VotingProfile> {
   Widget _createVoteInfoBody(DocumentSnapshot doc) {
     final election =
         doc.exists && doc.data != null ? doc.data['election'] : null;
-    final dropOffLocations =
-        doc.exists && doc.data != null ? doc.data['dropOffLocations'] : null;
     final contests =
         doc.exists && doc.data != null ? doc.data['contests'] : null;
     final loading = !doc.exists;
@@ -195,15 +193,16 @@ class _VotingProfileState extends State<VotingProfile> {
       headerCount += 1; // loading indicator
     }
 
-    final dropOffLocationsCount = _getPollingStationsCount(dropOffLocations);
+    final pollingStations = PollingStationsPage.getMerged(doc.data);
+    final pollingStationsCount = _getPollingStationsCount(pollingStations);
     final contestsCount = _getContestsCount(contests);
     final theme = Theme.of(context);
     return ListView.builder(
-      itemCount: headerCount + dropOffLocationsCount + contestsCount,
+      itemCount: headerCount + pollingStationsCount + contestsCount,
       itemBuilder: (context, index) {
         if (index == 0) {
-          return getHeader(
-              theme, BallotLocalizations.of(context).votingAddressLabel);
+          return getHeader(theme,
+              text: BallotLocalizations.of(context).votingAddressLabel);
         }
         if (index == 1) {
           return _createAddressHeader();
@@ -214,26 +213,26 @@ class _VotingProfileState extends State<VotingProfile> {
                 leading: CircularProgressIndicator(),
                 title: Text(BallotLocalizations.of(context).loading));
           }
-          if (dropOffLocationsCount > 0) {
+          if (pollingStationsCount > 0) {
             return _getPollingStationItem(
                 context,
-                BallotLocalizations.of(context).dropOffLocationHeader,
-                dropOffLocations,
+                BallotLocalizations.of(context).votingLocationTitle,
+                pollingStations,
                 index - headerCount);
           } else {
             return _getContestItem(context, election, contests,
-                index - headerCount - dropOffLocationsCount);
+                index - headerCount - pollingStationsCount);
           }
         }
-        if (index - headerCount < dropOffLocationsCount) {
+        if (index - headerCount < pollingStationsCount) {
           return _getPollingStationItem(
               context,
-              BallotLocalizations.of(context).dropOffLocationHeader,
-              dropOffLocations,
+              BallotLocalizations.of(context).votingLocationTitle,
+              pollingStations,
               index - headerCount);
         } else {
           return _getContestItem(context, election, contests,
-              index - headerCount - dropOffLocationsCount);
+              index - headerCount - pollingStationsCount);
         }
       },
     );
@@ -244,24 +243,18 @@ class _VotingProfileState extends State<VotingProfile> {
   Widget _getPollingStationItem(context, header, stations, index) {
     final theme = Theme.of(context);
     if (index == 0) {
-      return getHeader(theme, header);
+      return getHeader(theme,
+          text: header,
+          trailing: BallotLocalizations.of(context).all, onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => PollingStationsPage(stations),
+            ));
+      });
     }
     final stationIndex = index - 1;
     final station = stations[stationIndex];
 
-    final String address = Address.format(station['address']);
-    return ListTile(
-      trailing: IconButton(
-        icon: Icon(Icons.map),
-        onPressed: () {
-          final url = "https://www.google.com/maps?q=" +
-              Uri.encodeQueryComponent(address);
-          _launchUrl(url);
-        },
-      ),
-      title: Text(station['address']['locationName']),
-      subtitle: Text(address),
-    );
+    return PollingStationPage.getAddressHeader(context, station);
   }
 
   int _getContestsCount(contests) =>
@@ -269,7 +262,8 @@ class _VotingProfileState extends State<VotingProfile> {
   Widget _getContestItem(context, election, contests, index) {
     final theme = Theme.of(context);
     if (index == 0) {
-      return getHeader(theme, BallotLocalizations.of(context).contestsHeader);
+      return getHeader(theme,
+          text: BallotLocalizations.of(context).contestsHeader);
     }
 
     if (contests == null) {
@@ -310,11 +304,5 @@ class _VotingProfileState extends State<VotingProfile> {
           icon: Icon(Icons.edit),
           onPressed: _goToAddressInput,
         ));
-  }
-
-  void _launchUrl(url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
-    }
   }
 }

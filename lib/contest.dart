@@ -114,7 +114,7 @@ class _ContestPageState extends State<ContestPage> {
         final theme = Theme.of(context);
         switch (index) {
           case 0:
-            return getHeader(theme, contest['name']);
+            return getHeader(theme, text: contest['name']);
           default:
             if (loading) {
               return ListTile(
