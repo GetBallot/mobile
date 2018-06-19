@@ -100,9 +100,16 @@ class _ContestPageState extends State<ContestPage> {
       });
 
   Widget _createContestBody(election, contest, loading) {
-    final candidates = contest == null ? null : contest['candidates'];
+    bool isReferencedum = contest['referendumTitle'] != null;
+    final candidates = contest == null
+        ? null
+        : isReferencedum
+            ? contest['referendumBallotResponses']
+            : contest['candidates'];
+    int count =
+        (candidates == null ? 1 : candidates.length) + (isReferencedum ? 0 : 1);
     return ListView.builder(
-      itemCount: (candidates == null ? 1 : candidates.length) + 1,
+      itemCount: count,
       itemBuilder: (context, index) {
         final theme = Theme.of(context);
         switch (index) {
@@ -110,7 +117,7 @@ class _ContestPageState extends State<ContestPage> {
             return getHeader(theme, contest['name']);
           default:
             if (loading) {
-              return new ListTile(
+              return ListTile(
                   leading: CircularProgressIndicator(),
                   title: Text(BallotLocalizations.of(context).loading));
             }
@@ -120,7 +127,7 @@ class _ContestPageState extends State<ContestPage> {
             } else {
               final candidateIndex = index - 1;
               final candidate = candidates[candidateIndex];
-              return new GestureDetector(
+              return GestureDetector(
                 child: ListTile(
                   title: Text(
                     candidate['name'],
