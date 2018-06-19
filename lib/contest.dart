@@ -74,9 +74,11 @@ class _ContestPageState extends State<ContestPage> {
         final contest = electionSnapshot.data['contests'][widget.contestIndex];
         if (contest != null) {
           final candidates = contest['candidates'];
-          candidates.forEach((candidate) {
-            Favorites.updateCandidate(favs, favIdMap, candidate);
-          });
+          if (candidates != null) {
+            candidates.forEach((candidate) {
+              Favorites.updateCandidate(favs, favIdMap, candidate);
+            });
+          }
         }
       }
 
