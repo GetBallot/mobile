@@ -186,19 +186,23 @@ class _VotingProfileState extends State<VotingProfile> {
       });
 
   Widget _createVoteInfoBody(election, contests, loading) {
-    var headerCount = 1; // address header
+    var headerCount = 2; // address header
     if (loading) {
       headerCount += 1; // loading indicator
     }
 
-    var contestsCount = _getContestsCount(contests);
+    final contestsCount = _getContestsCount(contests);
+    final theme = Theme.of(context);
     return ListView.builder(
       itemCount: headerCount + contestsCount,
       itemBuilder: (context, index) {
         switch (index) {
           case 0:
-            return _createAddressHeader();
+            return getHeader(
+                theme, BallotLocalizations.of(context).votingAddressLabel);
           case 1:
+            return _createAddressHeader();
+          case 2:
             if (loading) {
               return ListTile(
                   leading: CircularProgressIndicator(),
@@ -255,8 +259,7 @@ class _VotingProfileState extends State<VotingProfile> {
 
   ListTile _createVotingAddressListTile(Address address) {
     return ListTile(
-        title: Text(BallotLocalizations.of(context).votingAddressLabel),
-        subtitle: Text(address.toString()),
+        title: Text(address.toString()),
         trailing: IconButton(
           icon: Icon(Icons.edit),
           onPressed: _goToAddressInput,
