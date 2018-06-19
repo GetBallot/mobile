@@ -16,6 +16,10 @@ abstract class GoogleCivicDefinition {
 
   @Get(url: "/voterinfo")
   Future<Response<VoterInfo>> voterinfo(
+      @Query() String address, @Query() String key);
+
+  @Get(url: "/voterinfo")
+  Future<Response<VoterInfo>> voterinfoForElection(
       @Query() String address, @Query() int electionId, @Query() String key);
 }
 
@@ -32,8 +36,11 @@ class GoogleCivic {
   }
 
   Future<Response<VoterInfo>> voterinfo(String address) {
-    int electionId = (address == SAMPLE_VOTER_INFO_ADDRESS) ? 2000 : null;
-    return service.voterinfo(address, electionId, GOOGLE_API_KEY);
+    if (address == SAMPLE_VOTER_INFO_ADDRESS) {
+      return service.voterinfoForElection(address, 2000, GOOGLE_API_KEY);
+    } else {
+      return service.voterinfo(address, GOOGLE_API_KEY);
+    }
   }
 
   String getErrorMessage(context, Response<String> response) {

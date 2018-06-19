@@ -21,7 +21,14 @@ class GoogleCivicService extends ChopperService
         responseType: RepresentativeInfo);
   }
 
-  Future<Response<VoterInfo>> voterinfo(
+  Future<Response<VoterInfo>> voterinfo(String address, String key) {
+    final url = '/voterinfo';
+    final params = {'address': address, 'key': key};
+    final request = new Request('GET', url, parameters: params);
+    return client.send<VoterInfo>(request, responseType: VoterInfo);
+  }
+
+  Future<Response<VoterInfo>> voterinfoForElection(
       String address, int electionId, String key) {
     final url = '/voterinfo';
     final params = {'address': address, 'electionId': electionId, 'key': key};
