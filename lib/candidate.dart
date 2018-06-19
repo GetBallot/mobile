@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'favorites.dart';
 import 'localizations.dart';
@@ -192,8 +193,31 @@ class _CandidatePageState extends State<CandidatePage> {
   }
 
   Widget _createSocialChannel(Map channel) {
+    var icon = Icon(Icons.link);
+    var title = channel['type'];
+    if (channel['id'] != null) {
+      final uri = Uri.parse(channel['id']);
+      final host = uri.host;
+      if (host.endsWith("facebook.com")) {
+        icon = Icon(FontAwesomeIcons.facebook);
+        if (uri.pathSegments != null && uri.pathSegments.length == 1) {
+          title = uri.pathSegments[0];
+        }
+      }
+      if (host.endsWith("twitter.com")) {
+        icon = Icon(FontAwesomeIcons.twitter);
+        if (uri.pathSegments != null && uri.pathSegments.length == 1) {
+          title = uri.pathSegments[0];
+        }
+      }
+      if (host.endsWith("youtube.com")) {
+        icon = Icon(FontAwesomeIcons.youtube);
+      }
+    }
+
     return ListTile(
-      title: Text(channel['type']),
+      leading: icon,
+      title: Text(title),
       onTap: () {
         _launchUrl(channel['id']);
       },
