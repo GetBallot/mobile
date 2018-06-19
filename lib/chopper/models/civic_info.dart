@@ -38,11 +38,25 @@ class RepresentativeInfo {
   }
 }
 
+class Source {
+  String name;
+  bool official;
+}
+
 class PollingLocation {
+  String id;
   Address address;
+  String notes;
+  String pollingHours;
+  String name;
+  String voterServices;
+  String startDate;
+  String endDate;
+  List<Source> sources;
 }
 
 class District {
+  String id;
   String name;
   String scope;
 }
@@ -67,13 +81,57 @@ class Contest {
   String name;
   String type;
   String office;
+  String primaryParty;
+  String electorateSpecifications;
+  String special;
   List<String> level;
+  List<String> roles;
   District district;
+  int numberElected;
+  int numberVotingFor;
+  int ballotPlacement;
   List<Candidate> candidates;
   String referendumTitle;
   String referendumSubtitle;
+  String referendumUrl;
+  String referendumBrief;
   String referendumText;
+  String referendumProStatement;
+  String referendumConStatement;
+  String referendumPassageThreshold;
+  String referendumEffectOfAbstain;
   List<String> referendumBallotResponses;
+  List<Source> sources;
+}
+
+class ElectionOfficials {
+  String name;
+  String title;
+  String officePhoneNumber;
+  String faxNumber;
+  String emailAddress;
+}
+
+class ElectionAdministrationBody {
+  String name;
+  String electionInfoUrl;
+  String electionRegistrationUrl;
+  String electionRegistrationConfirmationUrl;
+  String absenteeVotingInfoUrl;
+  String votingLocationFinderUrl;
+  String ballotInfoUrl;
+  String electionRulesUrl;
+  List<String> voter_services;
+  String hoursOfOperation;
+  Address correspondenceAddress;
+  Address physicalAddress;
+  List<ElectionOfficials> electionOfficials;
+  List<Source> sources;
+}
+
+class ElectionState {
+  String id;
+  String name;
 }
 
 class Election {
@@ -89,7 +147,11 @@ class VoterInfo {
   Election election;
   Address normalizedInput;
   List<PollingLocation> pollingLocations;
+  List<PollingLocation> earlyVoteSites;
+  List<PollingLocation> dropOffLocations;
   List<Contest> contests;
+  List<ElectionState> state;
+  bool mailOnly;
 
   Map serialize() {
     final map = serializer.serialize(this);
