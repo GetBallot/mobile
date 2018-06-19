@@ -44,7 +44,7 @@ class BallotLocalizations {
 
   String get votingAddressLabel {
     return Intl.message(
-      'Registered Voting Address',
+      'Voting Address',
       name: 'votingAddressLabel',
     );
   }
@@ -60,6 +60,13 @@ class BallotLocalizations {
     return Intl.message(
       'Voting Profile',
       name: 'votingProfileTitle',
+    );
+  }
+
+  String get divisionsTitle {
+    return Intl.message(
+      'Divisions',
+      name: 'divisionsTitle',
     );
   }
 

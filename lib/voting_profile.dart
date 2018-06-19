@@ -8,13 +8,14 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 
 import 'address_input.dart';
-import 'polling_station.dart';
 import 'chopper/google_civic.dart';
 import 'chopper/jaguar_serializer.dart';
 import 'chopper/models/civic_info.dart';
 import 'contest.dart';
+import 'divisions.dart';
 import 'localizations.dart';
 import 'login.dart';
+import 'polling_station.dart';
 import 'user.dart';
 import 'widgets.dart';
 
@@ -202,7 +203,13 @@ class _VotingProfileState extends State<VotingProfile> {
       itemBuilder: (context, index) {
         if (index == 0) {
           return getHeader(theme,
-              text: BallotLocalizations.of(context).votingAddressLabel);
+              text: BallotLocalizations.of(context).votingAddressLabel,
+              trailing: BallotLocalizations.of(context).divisionsTitle,
+              onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) => DivisionsPage(firebaseUser),
+                ));
+          });
         }
         if (index == 1) {
           return _createAddressHeader();

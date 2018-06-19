@@ -25,6 +25,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "changeAddress" : MessageLookupByLibrary.simpleMessage("Change Address"),
     "contestTitle" : MessageLookupByLibrary.simpleMessage("Contest"),
     "contestsHeader" : MessageLookupByLibrary.simpleMessage("Ballot Information"),
+    "divisionsTitle" : MessageLookupByLibrary.simpleMessage("Divisions"),
     "dropOffDatesLabel" : MessageLookupByLibrary.simpleMessage("Drop-off Location Dates"),
     "dropOffHoursLabel" : MessageLookupByLibrary.simpleMessage("Drop-off Location Hours"),
     "earlyVoteSiteDatesLabel" : MessageLookupByLibrary.simpleMessage("Early Voting Dates"),
@@ -39,7 +40,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "pollingStationHoursLabel" : MessageLookupByLibrary.simpleMessage("Voting Hours"),
     "required" : MessageLookupByLibrary.simpleMessage("Required"),
     "signInWithGoogle" : MessageLookupByLibrary.simpleMessage("Sign in with Google"),
-    "votingAddressLabel" : MessageLookupByLibrary.simpleMessage("Registered Voting Address"),
+    "votingAddressLabel" : MessageLookupByLibrary.simpleMessage("Voting Address"),
     "votingLocationTitle" : MessageLookupByLibrary.simpleMessage("Voting Location"),
     "votingLocationsTitle" : MessageLookupByLibrary.simpleMessage("Voting Locations"),
     "votingProfileTitle" : MessageLookupByLibrary.simpleMessage("Voting Profile")

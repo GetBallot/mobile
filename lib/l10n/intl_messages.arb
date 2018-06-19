@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-06-19T14:15:30.335825",
+  "@@last_modified": "2018-06-19T14:43:24.301982",
   "mainTitle": "Ballot",
   "@mainTitle": {
     "type": "text",
@@ -15,7 +15,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "votingAddressLabel": "Registered Voting Address",
+  "votingAddressLabel": "Voting Address",
   "@votingAddressLabel": {
     "type": "text",
     "placeholders": {}
@@ -27,6 +27,11 @@
   },
   "votingProfileTitle": "Voting Profile",
   "@votingProfileTitle": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "divisionsTitle": "Divisions",
+  "@divisionsTitle": {
     "type": "text",
     "placeholders": {}
   },
