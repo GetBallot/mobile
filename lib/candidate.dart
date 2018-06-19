@@ -68,15 +68,39 @@ class _CandidatePageState extends State<CandidatePage> {
               ? supplementSnapshot.data
               : null;
       Map favIdMap = supplement == null ? {} : supplement['favIdMap'] ?? {};
+      Map candidateMap =
+          supplement == null ? {} : supplement['candidates'] ?? {};
 
       if (electionSnapshot.exists) {
         final candidate = electionSnapshot.data['contests'][widget.contestIndex]
             ['candidates'][widget.candidateIndex];
         Favorites.updateCandidate(favs, favIdMap, candidate);
+        if (candidate['favId'] != null &&
+            candidateMap[candidate['favId']] != null) {
+          final extra = candidateMap[candidate['favId']];
+          extra.forEach((key, value) {
+            if (candidate[key] != null && value is List) {
+              candidate[key] = _mergeList(candidate[key], value);
+            } else {
+              candidate[key] = value;
+            }
+          });
+        }
       }
 
       return electionSnapshot;
     });
+  }
+
+  List _mergeList(List oldList, List newList) {
+    List results = [];
+    results.addAll(oldList);
+    newList.forEach((item) {
+      if (!oldList.contains(item)) {
+        results.add(item);
+      }
+    });
+    return results;
   }
 
   Widget _createBody() => StreamBuilder(
@@ -156,7 +180,7 @@ class _CandidatePageState extends State<CandidatePage> {
       );
     }
 
-    if (candidate.containsKey('channels')) {
+    if (candidate['channels'] != null) {
       List channels = candidate['channels'];
       channels.forEach((channel) => rows.add(_createSocialChannel(channel)));
     }
