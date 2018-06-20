@@ -49,31 +49,25 @@ class _VotingProfileState extends State<VotingProfile> {
 
   Future<Response> _fetch(String address) async {
     try {
-      final response = await _fetchVoterInfo(address);
-      _fetchRepresentativeInfo(address, false);
+      final response = await _googleCivic.voterinfo(address);
+      _fetchRepresentativeInfo(response.body, address);
       return response;
     } catch (e) {
       if (e is Response<String>) {
         if (e.statusCode == 400) {
           _deleteVoterInfo();
-          return _fetchRepresentativeInfo(address, true);
+          return _fetchRepresentativeInfo(null, address);
         }
       }
       throw e;
     }
   }
 
-  Future<Response> _fetchVoterInfo(String address) async {
-    final Response<VoterInfo> response = await _googleCivic.voterinfo(address);
-    _saveVoterInfo(response.body);
-    return response;
-  }
-
   Future<Response> _fetchRepresentativeInfo(
-      String address, bool updateUpcomingElection) async {
+      VoterInfo voterInfo, String address) async {
     final Response<RepresentativeInfo> response =
         await _googleCivic.representatives(address);
-    _saveRepresentativeInfo(response.body, updateUpcomingElection);
+    _saveCivicInfo(voterInfo, response.body);
     return response;
   }
 
@@ -89,14 +83,6 @@ class _VotingProfileState extends State<VotingProfile> {
       .document("upcoming")
       .snapshots();
 
-  void _saveVoterInfo(VoterInfo voterInfo) async {
-    User
-        .getRef(widget.firebaseUser)
-        .collection("triggers")
-        .document("voterinfo")
-        .setData({"lang": _getLang(), "voterinfo": voterInfo.serialize()});
-  }
-
   void _deleteVoterInfo() async {
     User
         .getRef(widget.firebaseUser)
@@ -105,17 +91,19 @@ class _VotingProfileState extends State<VotingProfile> {
         .delete();
   }
 
-  void _saveRepresentativeInfo(
-      RepresentativeInfo repInfo, bool updateUpcomingElection) async {
-    final data = {'lang': _getLang(), 'representatives': repInfo.serialize()};
-    if (updateUpcomingElection) {
-      data['updateUpcomingElection'] = DateTime.now();
+  void _saveCivicInfo(VoterInfo voterInfo, RepresentativeInfo repInfo) async {
+    final data = {
+      'lang': _getLang(),
+      'representatives': repInfo.serialize(),
+    };
+    if (voterInfo != null) {
+      data['voterinfo'] = voterInfo.serialize();
     }
 
     User
         .getRef(widget.firebaseUser)
         .collection("triggers")
-        .document("representatives")
+        .document("civicinfo")
         .setData(data);
   }
 

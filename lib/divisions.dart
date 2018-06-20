@@ -25,7 +25,7 @@ class DivisionsPage extends StatelessWidget {
       stream: User
           .getRef(firebaseUser)
           .collection('triggers')
-          .document('representatives')
+          .document('civicinfo')
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data.exists) {
