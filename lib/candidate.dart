@@ -49,44 +49,16 @@ class _CandidatePageState extends State<CandidatePage> {
         User.getFavCandidatesRef(widget.firebaseUser).snapshots();
     final inputStreams = [widget.ref.snapshots(), favsStream];
 
-    if (widget.electionId != null) {
-      inputStreams.add(Firestore.instance
-          .collection('elections')
-          .document(widget.electionId)
-          .snapshots());
-    }
-
     return StreamZip(inputStreams).map((results) {
       DocumentSnapshot electionSnapshot = results[0];
 
       DocumentSnapshot favsSnapshot = results[1];
       favs = favsSnapshot.exists ? favsSnapshot.data : {};
 
-      DocumentSnapshot supplementSnapshot =
-          results.length >= 3 ? results[2] : null;
-      final supplement =
-          (supplementSnapshot != null && supplementSnapshot.exists)
-              ? supplementSnapshot.data
-              : null;
-      Map favIdMap = supplement == null ? {} : supplement['favIdMap'] ?? {};
-      Map candidateMap =
-          supplement == null ? {} : supplement['candidates'] ?? {};
-
       if (electionSnapshot.exists) {
         final candidate = electionSnapshot.data['contests'][widget.contestIndex]
             ['candidates'][widget.candidateIndex];
-        Favorites.updateCandidate(favs, favIdMap, candidate);
-        if (candidate['favId'] != null &&
-            candidateMap[candidate['favId']] != null) {
-          final extra = candidateMap[candidate['favId']];
-          extra.forEach((key, value) {
-            if (candidate[key] != null && value is List) {
-              candidate[key] = _mergeList(candidate[key], value);
-            } else {
-              candidate[key] = value;
-            }
-          });
-        }
+        candidate['fav'] = Favorites.isFav(favs, candidate['favId']);
       }
 
       return electionSnapshot;

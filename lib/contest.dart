@@ -49,26 +49,11 @@ class _ContestPageState extends State<ContestPage> {
         User.getFavCandidatesRef(widget.firebaseUser).snapshots();
     final inputStreams = [widget.ref.snapshots(), favsStream];
 
-    if (widget.electionId != null) {
-      inputStreams.add(Firestore.instance
-          .collection('elections')
-          .document(widget.electionId)
-          .snapshots());
-    }
-
     return StreamZip(inputStreams).map((results) {
       DocumentSnapshot electionSnapshot = results[0];
 
       DocumentSnapshot favsSnapshot = results[1];
       favs = favsSnapshot.exists ? favsSnapshot.data : {};
-
-      DocumentSnapshot supplementSnapshot =
-          results.length >= 3 ? results[2] : null;
-      final supplement =
-          (supplementSnapshot != null && supplementSnapshot.exists)
-              ? supplementSnapshot.data
-              : null;
-      Map favIdMap = supplement == null ? {} : supplement['favIdMap'] ?? {};
 
       if (electionSnapshot.exists) {
         final contest = electionSnapshot.data['contests'][widget.contestIndex];
@@ -76,7 +61,7 @@ class _ContestPageState extends State<ContestPage> {
           final candidates = contest['candidates'];
           if (candidates != null) {
             candidates.forEach((candidate) {
-              Favorites.updateCandidate(favs, favIdMap, candidate);
+              candidate['fav'] = Favorites.isFav(favs, candidate['favId']);
             });
           }
         }
@@ -100,14 +85,14 @@ class _ContestPageState extends State<ContestPage> {
       });
 
   Widget _createContestBody(election, contest, loading) {
-    bool isReferencedum = contest['referendumTitle'] != null;
+    bool isReferendum = contest['referendumTitle'] != null;
     final candidates = contest == null
         ? null
-        : isReferencedum
+        : isReferendum
             ? contest['referendumBallotResponses']
             : contest['candidates'];
     int count =
-        (candidates == null ? 1 : candidates.length) + (isReferencedum ? 0 : 1);
+        (candidates == null ? 1 : candidates.length) + (isReferendum ? 0 : 1);
     return ListView.builder(
       itemCount: count,
       itemBuilder: (context, index) {
