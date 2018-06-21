@@ -93,6 +93,7 @@ class PollingStationPage extends StatelessWidget {
       );
 
   static Widget getAddressListTile(context, station, bool inList) {
+    final name = station['address']['locationName'];
     final String address = Address.format(station['address']);
     return ListTile(
       trailing: IconButton(
@@ -103,8 +104,8 @@ class PollingStationPage extends StatelessWidget {
           _launchUrl(url);
         },
       ),
-      title: inList ? Text(station['address']['locationName']) : Text(address),
-      subtitle: inList ? Text(address) : null,
+      title: Text(inList && name != null ? name : address),
+      subtitle: inList && name != null ? Text(address) : null,
     );
   }
 
@@ -120,10 +121,14 @@ class PollingStationPage extends StatelessWidget {
 
   static Widget getWidget(context, station) {
     final theme = Theme.of(context);
-    final List<Widget> rows = [
-      getHeader(theme, text: station['address']['locationName']),
-      getAddressListTile(context, station, false),
-    ];
+    final List<Widget> rows = [];
+
+    final String name = station['address']['locationName'];
+    if (name != null) {
+      rows.add(getHeader(theme, text: name));
+    }
+
+    rows.add(getAddressListTile(context, station, false));
 
     _addInfoRow(rows, station, 'pollingStation', 'pollingHours',
         BallotLocalizations.of(context).pollingStationHoursLabel);
