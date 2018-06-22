@@ -19,18 +19,10 @@ import 'polling_station.dart';
 import 'user.dart';
 import 'widgets.dart';
 
-class VotingProfile extends StatefulWidget {
-  final FirebaseUser firebaseUser;
-
+class VotingProfile extends StatelessWidget {
   VotingProfile({Key key, this.firebaseUser}) : super(key: key);
 
-  @override
-  _VotingProfileState createState() => _VotingProfileState(firebaseUser);
-}
-
-class _VotingProfileState extends State<VotingProfile> {
-  _VotingProfileState(this.firebaseUser);
-  FirebaseUser firebaseUser;
+  final FirebaseUser firebaseUser;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -85,7 +77,7 @@ class _VotingProfileState extends State<VotingProfile> {
 
   void _deleteVoterInfo() async {
     User
-        .getRef(widget.firebaseUser)
+        .getRef(firebaseUser)
         .collection("triggers")
         .document("voterinfo")
         .delete();
@@ -101,7 +93,7 @@ class _VotingProfileState extends State<VotingProfile> {
     }
 
     User
-        .getRef(widget.firebaseUser)
+        .getRef(firebaseUser)
         .collection("triggers")
         .document("civicinfo")
         .setData(data);
@@ -132,10 +124,11 @@ class _VotingProfileState extends State<VotingProfile> {
         if (snapshot.hasData) {
           if (snapshot.data is Response<VoterInfo>) {
             VoterInfo voterInfo = snapshot.data.body;
-            return _createVotingAddressListTile(voterInfo.normalizedInput);
+            return _createVotingAddressListTile(
+                context, voterInfo.normalizedInput);
           }
           RepresentativeInfo repInfo = snapshot.data.body;
-          return _createVotingAddressListTile(repInfo.normalizedInput);
+          return _createVotingAddressListTile(context, repInfo.normalizedInput);
         } else if (snapshot.hasError) {
           return Center(
             child: Container(
@@ -150,7 +143,7 @@ class _VotingProfileState extends State<VotingProfile> {
                 ),
                 RaisedButton(
                   child: Text(BallotLocalizations.of(context).changeAddress),
-                  onPressed: _goToAddressInput,
+                  onPressed: () => _goToAddressInput(context),
                 )
               ],
             )),
@@ -165,12 +158,12 @@ class _VotingProfileState extends State<VotingProfile> {
       stream: _getElectionStream(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return _createVoteInfoBody(snapshot.data);
+          return _createVoteInfoBody(context, snapshot.data);
         }
         return Center(child: CircularProgressIndicator());
       });
 
-  Widget _createVoteInfoBody(DocumentSnapshot doc) {
+  Widget _createVoteInfoBody(context, DocumentSnapshot doc) {
     final election =
         doc.exists && doc.data != null ? doc.data['election'] : null;
     final contests =
@@ -277,7 +270,7 @@ class _VotingProfileState extends State<VotingProfile> {
               .document('upcoming');
           Navigator.of(context).push(MaterialPageRoute(
                 builder: (context) => ContestPage(
-                    firebaseUser: widget.firebaseUser,
+                    firebaseUser: firebaseUser,
                     ref: ref,
                     electionId: election['id'],
                     contestIndex: contestIndex),
@@ -285,19 +278,19 @@ class _VotingProfileState extends State<VotingProfile> {
         });
   }
 
-  void _goToAddressInput() {
+  void _goToAddressInput(context) {
     Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => AddressInputPage(
-              firebaseUser: widget.firebaseUser, firstTime: false),
+          builder: (context) =>
+              AddressInputPage(firebaseUser: firebaseUser, firstTime: false),
         ));
   }
 
-  ListTile _createVotingAddressListTile(Address address) {
+  ListTile _createVotingAddressListTile(context, Address address) {
     return ListTile(
         title: Text(address.toString()),
         trailing: IconButton(
           icon: Icon(Icons.edit),
-          onPressed: _goToAddressInput,
+          onPressed: () => _goToAddressInput(context),
         ));
   }
 }

@@ -10,11 +10,11 @@ import 'localizations.dart';
 import 'user.dart';
 import 'voting_profile.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends StatelessWidget {
   static const String routeName = "/login";
 
-  @override
-  _LoginPageState createState() => new _LoginPageState();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   static Widget onLogin(User user) {
     if (user != null && user.address != null) {
@@ -41,11 +41,6 @@ class LoginPage extends StatefulWidget {
       },
     );
   }
-}
-
-class _LoginPageState extends State<LoginPage> {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   Future<User> _signInWithGoogle() async {
     final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
