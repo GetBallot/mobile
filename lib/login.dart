@@ -16,11 +16,14 @@ class LoginPage extends StatelessWidget {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  static Widget onLogin(User user) {
+  static Widget onLogin(context, User user) {
     if (user != null && user.address != null) {
       return VotingProfile(firebaseUser: user.firebaseUser);
     } else {
-      return AddressInputPage(firebaseUser: user.firebaseUser, firstTime: true);
+      return AddressInputPage(
+          firebaseUser: user.firebaseUser,
+          firstTime: true,
+          hint: BallotLocalizations.of(context).votingAddressLabel);
     }
   }
 
@@ -68,7 +71,7 @@ class LoginPage extends StatelessWidget {
             onPressed: () {
               _signInWithGoogle().then((user) {
                 var route = MaterialPageRoute(
-                  builder: (context) => LoginPage.onLogin(user),
+                  builder: (context) => LoginPage.onLogin(context, user),
                 );
                 Navigator.of(context).pushReplacement(route);
               });

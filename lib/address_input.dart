@@ -1,149 +1,89 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_google_places_autocomplete/flutter_google_places_autocomplete.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import 'chopper/google_civic.dart';
-import 'localizations.dart';
+import 'credentials.dart';
 import 'login.dart';
 import 'user.dart';
 import 'voting_profile.dart';
 
-class AddressInputPage extends StatefulWidget {
-  static const String routeName = "/address_input";
-
+class AddressInputPage extends GooglePlacesAutocompleteWidget {
   final FirebaseUser firebaseUser;
-  bool firstTime;
+  final bool firstTime;
 
-  AddressInputPage({Key key, this.firebaseUser, this.firstTime})
-      : super(key: key);
+  AddressInputPage({Key key, this.firebaseUser, this.firstTime, hint})
+      : super(
+          apiKey: GOOGLE_API_KEY,
+          language: 'en',
+          hint: hint,
+          components: [new Component(Component.country, 'us')],
+        );
 
   @override
-  _AddressInputPageState createState() => _AddressInputPageState();
+  _AddressInputPageState createState() =>
+      _AddressInputPageState(firebaseUser, firstTime);
 }
 
-class _AddressInputPageState extends State<AddressInputPage> {
+class _AddressInputPageState extends GooglePlacesAutocompleteState {
+  _AddressInputPageState(this.firebaseUser, this.firstTime);
+
+  final FirebaseUser firebaseUser;
+  final bool firstTime;
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
-
-  final _formKey = GlobalKey<FormState>();
-  String _address;
-
-  void _updateUser() async {
-    User
-        .getRef(widget.firebaseUser)
-        .collection("elections")
-        .document("upcoming")
-        .delete();
-
-    User
-        .getRef(widget.firebaseUser)
-        .collection("triggers")
-        .document("address")
-        .setData({"address": _address});
-
-    if (widget.firstTime) {
-      var route = MaterialPageRoute(
-        builder: (context) => VotingProfile(firebaseUser: widget.firebaseUser),
-      );
-      Navigator.of(context).pushReplacement(route);
-    } else {
-      Navigator.of(context).pop();
-    }
-  }
+  final GoogleMapsPlaces _places = GoogleMapsPlaces(GOOGLE_API_KEY);
+  final _searchScaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final addressController = TextEditingController();
-
     return Scaffold(
+      key: _searchScaffoldKey,
       appBar: AppBar(
-        title: Text(BallotLocalizations.of(context).addressInputTitle),
-        actions: widget.firstTime
+        title: AppBarPlacesAutoCompleteTextField(),
+        actions: firstTime
             ? <Widget>[
                 LoginPage.createLogoutButton(context, _auth, _googleSignIn),
               ]
             : null,
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                child: TextFormField(
-                  controller: addressController,
-                  onSaved: (val) => _address = val,
-                  decoration: InputDecoration(
-                      labelText:
-                          BallotLocalizations.of(context).votingAddressLabel),
-                  validator: (val) {
-                    return val.isEmpty
-                        ? BallotLocalizations.of(context).required
-                        : null;
-                  },
-                ),
-              ),
-              Wrap(
-                children: <Widget>[
-                  _createAddressExampleButton(
-                      "Sample",
-                      GoogleCivic.SAMPLE_VOTER_INFO_ADDRESS,
-                      theme,
-                      addressController),
-                  _createAddressExampleButton(
-                      "Castle Rock",
-                      "488 Black Feather Loop, Castle Rock, CO",
-                      theme,
-                      addressController),
-                  _createAddressExampleButton(
-                      "Firestone",
-                      "326 Jackson Ave, Firestone, CO 80520",
-                      theme,
-                      addressController),
-                  _createAddressExampleButton(
-                      "Kansas",
-                      "1924 S Millwood Ave, Wichita, KS 67213",
-                      theme,
-                      addressController),
-                  _createAddressExampleButton(
-                      "Oklahoma",
-                      "5618 S Quebec Ave, Tulsa, OK 74135",
-                      theme,
-                      addressController),
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: RaisedButton(
-                  child: Text(BallotLocalizations.of(context).lookup),
-                  onPressed: () {
-                    final form = _formKey.currentState;
-                    if (form.validate()) {
-                      form.save();
-                      _updateUser();
-                    }
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      body: GooglePlacesAutocompleteResult(onTap: (p) {
+        _processPrediction(p, _searchScaffoldKey.currentState);
+      }),
     );
   }
 
-  Widget _createAddressExampleButton(text, address, theme, addressController) {
-    return FlatButton(
-      child: Text(text,
-          style: TextStyle(
-              color: theme.accentColor, decoration: TextDecoration.underline)),
-      onPressed: () {
-        addressController.text = address;
-      },
-    );
+  Future<Null> _processPrediction(Prediction p, ScaffoldState scaffold) async {
+    if (p != null) {
+      PlacesDetailsResponse detail =
+          await _places.getDetailsByPlaceId(p.placeId);
+      _updateUser(detail.result.formattedAddress);
+    }
+  }
+
+  void _updateUser(address) async {
+    User
+        .getRef(firebaseUser)
+        .collection('elections')
+        .document('upcoming')
+        .delete();
+
+    User
+        .getRef(firebaseUser)
+        .collection('triggers')
+        .document('address')
+        .setData({'address': address});
+
+    if (firstTime) {
+      var route = MaterialPageRoute(
+        builder: (context) => VotingProfile(firebaseUser: firebaseUser),
+      );
+      Navigator.of(context).pushReplacement(route);
+    } else {
+      Navigator.of(context).pop();
+    }
   }
 }

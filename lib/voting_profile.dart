@@ -280,8 +280,10 @@ class VotingProfile extends StatelessWidget {
 
   void _goToAddressInput(context) {
     Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) =>
-              AddressInputPage(firebaseUser: firebaseUser, firstTime: false),
+          builder: (context) => AddressInputPage(
+              firebaseUser: firebaseUser,
+              firstTime: false,
+              hint: BallotLocalizations.of(context).votingAddressLabel),
         ));
   }
 

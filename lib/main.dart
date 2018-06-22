@@ -5,7 +5,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'address_input.dart';
 import 'localizations.dart';
 import 'login.dart';
 import 'user.dart';
@@ -53,13 +52,12 @@ class Ballot extends StatelessWidget {
           if (user == null) {
             return LoginPage();
           } else {
-            return LoginPage.onLogin(user);
+            return LoginPage.onLogin(context, user);
           }
         },
       ),
       routes: <String, WidgetBuilder>{
         LoginPage.routeName: (context) => LoginPage(),
-        AddressInputPage.routeName: (context) => AddressInputPage(),
       },
     );
   }

@@ -20,6 +20,8 @@ dependencies:
 
   url_launcher: ^3.0.2
 
+  flutter_google_places_autocomplete: ^0.0.5
+
   font_awesome_flutter: ^7.0.0
 
   # The following adds the Cupertino Icons font to your application.
