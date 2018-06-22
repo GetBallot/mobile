@@ -96,7 +96,7 @@ class _CandidatePageState extends State<CandidatePage> {
     final List<Widget> rows = [
       ListTile(
         leading: candidate['photoUrl'] != null
-            ? Image.network(candidate['photoUrl'])
+            ? Image.network(candidate['photoUrl'], height: 80.0)
             : null,
         title: Text(candidate['name'], style: TextStyle(fontSize: 20.0)),
         subtitle: candidate['party'] != null
