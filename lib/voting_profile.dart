@@ -1,16 +1,9 @@
-import 'dart:async';
-
-import 'package:chopper/chopper.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:intl/intl.dart';
 
 import 'address_input.dart';
-import 'chopper/google_civic.dart';
-import 'chopper/jaguar_serializer.dart';
-import 'chopper/models/civic_info.dart';
 import 'contest.dart';
 import 'divisions.dart';
 import 'localizations.dart';
@@ -26,84 +19,6 @@ class VotingProfile extends StatelessWidget {
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
-  final GoogleCivic _googleCivic = _createGoogleCivic();
-
-  static GoogleCivic _createGoogleCivic() {
-    final chopper = ChopperClient(
-        baseUrl: "https://www.googleapis.com/civicinfo/v2",
-        converter: const JaguarConverter(),
-        apis: [GoogleCivicService()]);
-
-    final service = chopper.service(GoogleCivicService);
-
-    return GoogleCivic(service);
-  }
-
-  Future<Response> _fetch(String address) async {
-    try {
-      final response = await _googleCivic.voterinfo(address);
-      _fetchRepresentativeInfo(response.body, address);
-      return response;
-    } catch (e) {
-      if (e is Response<String>) {
-        if (e.statusCode == 400) {
-          _deleteVoterInfo();
-          return _fetchRepresentativeInfo(null, address);
-        }
-      }
-      throw e;
-    }
-  }
-
-  Future<Response> _fetchRepresentativeInfo(
-      VoterInfo voterInfo, String address) async {
-    final Response<RepresentativeInfo> response =
-        await _googleCivic.representatives(address);
-    _saveCivicInfo(voterInfo, response.body);
-    return response;
-  }
-
-  Stream<Response> _getUserStream() => User
-      .getAddressRef(firebaseUser)
-      .snapshots()
-      .map((snapshot) => snapshot["address"])
-      .asyncMap((snapshot) => _fetch(snapshot));
-
-  Stream<DocumentSnapshot> _getElectionStream() => User
-      .getRef(firebaseUser)
-      .collection("elections")
-      .document("upcoming")
-      .snapshots();
-
-  void _deleteVoterInfo() async {
-    User
-        .getRef(firebaseUser)
-        .collection("triggers")
-        .document("voterinfo")
-        .delete();
-  }
-
-  void _saveCivicInfo(VoterInfo voterInfo, RepresentativeInfo repInfo) async {
-    final data = {
-      'lang': _getLang(),
-      'representatives': repInfo.serialize(),
-    };
-    if (voterInfo != null) {
-      data['voterinfo'] = voterInfo.serialize();
-    }
-
-    User
-        .getRef(firebaseUser)
-        .collection("triggers")
-        .document("civicinfo")
-        .setData(data);
-  }
-
-  // TODO: Use BallotLocalizations to always get a supported language
-  String _getLang() {
-    final lang = Intl.defaultLocale;
-    return ['en'].contains(lang) ? lang : 'en';
-  }
 
   @override
   Widget build(context) {
@@ -119,43 +34,18 @@ class VotingProfile extends StatelessWidget {
   }
 
   Widget _createAddressHeader() => StreamBuilder(
-      stream: _getUserStream(),
+      stream: User.getAddressRef(firebaseUser).snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          if (snapshot.data is Response<VoterInfo>) {
-            VoterInfo voterInfo = snapshot.data.body;
-            return _createVotingAddressListTile(
-                context, voterInfo.normalizedInput);
-          }
-          RepresentativeInfo repInfo = snapshot.data.body;
-          return _createVotingAddressListTile(context, repInfo.normalizedInput);
-        } else if (snapshot.hasError) {
-          return Center(
-            child: Container(
-                child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                      _googleCivic.getErrorMessage(context, snapshot.error),
-                      style: TextStyle(fontSize: 20.0)),
-                ),
-                RaisedButton(
-                  child: Text(BallotLocalizations.of(context).changeAddress),
-                  onPressed: () => _goToAddressInput(context),
-                )
-              ],
-            )),
-          );
+          return _createVotingAddressListTile(
+              context, snapshot.data['address']);
         }
-
         // By default, show a loading spinner
         return Center(child: CircularProgressIndicator());
       });
 
   Widget _createBody() => StreamBuilder(
-      stream: _getElectionStream(),
+      stream: User.getUpcomingRef(firebaseUser).snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return _createVoteInfoBody(context, snapshot.data);
@@ -288,9 +178,9 @@ class VotingProfile extends StatelessWidget {
         ));
   }
 
-  ListTile _createVotingAddressListTile(context, Address address) {
+  ListTile _createVotingAddressListTile(context, String address) {
     return ListTile(
-        title: Text(address.toString()),
+        title: Text(address),
         trailing: IconButton(
           icon: Icon(Icons.edit),
           onPressed: () => _goToAddressInput(context),

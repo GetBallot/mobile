@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_google_places_autocomplete/flutter_google_places_autocomplete.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:intl/intl.dart';
 
 import 'credentials.dart';
 import 'login.dart';
@@ -75,7 +76,7 @@ class _AddressInputPageState extends GooglePlacesAutocompleteState {
         .getRef(firebaseUser)
         .collection('triggers')
         .document('address')
-        .setData({'address': address});
+        .setData({'address': address, 'lang': _getLang()});
 
     if (firstTime) {
       var route = MaterialPageRoute(
@@ -85,5 +86,11 @@ class _AddressInputPageState extends GooglePlacesAutocompleteState {
     } else {
       Navigator.of(context).pop();
     }
+  }
+
+  // TODO: Use BallotLocalizations to always get a supported language
+  String _getLang() {
+    final lang = Intl.defaultLocale;
+    return ['en'].contains(lang) ? lang : 'en';
   }
 }
