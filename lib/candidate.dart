@@ -65,17 +65,6 @@ class _CandidatePageState extends State<CandidatePage> {
     });
   }
 
-  List _mergeList(List oldList, List newList) {
-    List results = [];
-    results.addAll(oldList);
-    newList.forEach((item) {
-      if (!oldList.contains(item)) {
-        results.add(item);
-      }
-    });
-    return results;
-  }
-
   Widget _createBody() => StreamBuilder(
       stream: _createStream(),
       builder: (context, snapshot) {

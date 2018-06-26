@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -29,53 +27,6 @@ class PollingStationsPage extends StatelessWidget {
           final station = stations[index];
           return PollingStationPage.getAddressHeader(context, station);
         });
-  }
-
-  static List<Map> getMerged(Map election) {
-    final stations = LinkedHashMap<String, Map>();
-    if (election == null) {
-      return [];
-    }
-
-    if (election['pollingStations'] != null) {
-      election['pollingStations'].forEach((station) {
-        _addStation(stations, station, 'pollingStation');
-      });
-    }
-
-    if (election['dropOffLocations'] != null) {
-      election['dropOffLocations'].forEach((station) {
-        _addStation(stations, station, 'dropOffLocation');
-      });
-    }
-
-    if (election['earlyVoteSites'] != null) {
-      election['earlyVoteSites'].forEach((station) {
-        _addStation(stations, station, 'earlyVoteSite');
-      });
-    }
-
-    return stations.values.toList();
-  }
-
-  static void _addStation(stations, station, type) {
-    if (station['address'] == null) {
-      return;
-    }
-
-    final locationName = station['address']['locationName'];
-    final String address = Address.format(station['address']);
-    final key = locationName == null ? address : locationName + ', ' + address;
-
-    if (stations[key] == null) {
-      stations[key] = {
-        'id': station['id'],
-        'address': station['address'],
-      };
-    }
-    stations[key][type] = station;
-    stations[key][type].remove('id');
-    stations[key][type].remove('address');
   }
 }
 

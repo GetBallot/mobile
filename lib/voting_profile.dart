@@ -168,6 +168,8 @@ class VotingProfile extends StatelessWidget {
         doc.exists && doc.data != null ? doc.data['election'] : null;
     final contests =
         doc.exists && doc.data != null ? doc.data['contests'] : null;
+    final votingLocations =
+        doc.exists && doc.data != null ? doc.data['votingLocations'] : null;
     final loading = !doc.exists;
 
     var headerCount = 2; // address header
@@ -175,12 +177,11 @@ class VotingProfile extends StatelessWidget {
       headerCount += 1; // loading indicator
     }
 
-    final pollingStations = PollingStationsPage.getMerged(doc.data);
-    final pollingStationsCount = _getPollingStationsCount(pollingStations);
+    final votingLocationsCount = _getVotingLocationsCount(votingLocations);
     final contestsCount = _getContestsCount(contests);
     final theme = Theme.of(context);
     return ListView.builder(
-      itemCount: headerCount + pollingStationsCount + contestsCount,
+      itemCount: headerCount + votingLocationsCount + contestsCount,
       itemBuilder: (context, index) {
         if (index == 0) {
           return getHeader(theme,
@@ -201,32 +202,32 @@ class VotingProfile extends StatelessWidget {
                 leading: CircularProgressIndicator(),
                 title: Text(BallotLocalizations.of(context).loading));
           }
-          if (pollingStationsCount > 0) {
+          if (votingLocationsCount > 0) {
             return _getPollingStationItem(
                 context,
                 BallotLocalizations.of(context).votingLocationTitle,
-                pollingStations,
+                votingLocations,
                 index - headerCount);
           } else {
             return _getContestItem(context, election, contests,
-                index - headerCount - pollingStationsCount);
+                index - headerCount - votingLocationsCount);
           }
         }
-        if (index - headerCount < pollingStationsCount) {
+        if (index - headerCount < votingLocationsCount) {
           return _getPollingStationItem(
               context,
               BallotLocalizations.of(context).votingLocationTitle,
-              pollingStations,
+              votingLocations,
               index - headerCount);
         } else {
           return _getContestItem(context, election, contests,
-              index - headerCount - pollingStationsCount);
+              index - headerCount - votingLocationsCount);
         }
       },
     );
   }
 
-  int _getPollingStationsCount(items) =>
+  int _getVotingLocationsCount(items) =>
       (items == null || items.length == 0) ? 0 : 2;
   Widget _getPollingStationItem(context, header, stations, index) {
     final theme = Theme.of(context);
