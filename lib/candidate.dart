@@ -155,23 +155,28 @@ class _CandidatePageState extends State<CandidatePage> {
 
   Widget _createSocialChannel(Map channel) {
     var icon = Icon(Icons.link);
-    var title = channel['type'];
-    if (channel['id'] != null) {
-      final uri = Uri.parse(channel['id']);
-      final host = uri.host;
-      if (host.endsWith("facebook.com")) {
+    String url = channel['id'];
+    var type = channel['type'];
+    var title = type;
+    if (url != null) {
+      final uri = Uri.parse(_removeTrailingSlash(url));
+      if (type == 'Facebook') {
         icon = Icon(FontAwesomeIcons.facebook);
-        if (uri.pathSegments != null && uri.pathSegments.length == 1) {
-          title = uri.pathSegments[0];
-        }
+        title = _getUsernameFromUri(uri, 0) ?? title;
       }
-      if (host.endsWith("twitter.com")) {
+      if (type == 'Twitter') {
         icon = Icon(FontAwesomeIcons.twitter);
-        if (uri.pathSegments != null && uri.pathSegments.length == 1) {
-          title = uri.pathSegments[0];
-        }
+        title = _getUsernameFromUri(uri, 0) ?? title;
       }
-      if (host.endsWith("youtube.com")) {
+      if (type == 'Instagram') {
+        icon = Icon(FontAwesomeIcons.instagram);
+        title = _getUsernameFromUri(uri, 0) ?? title;
+      }
+      if (type == 'Flickr') {
+        icon = Icon(FontAwesomeIcons.flickr);
+        title = _getUsernameFromUri(uri, 0) ?? title;
+      }
+      if (type == 'YouTube') {
         icon = Icon(FontAwesomeIcons.youtube);
       }
     }
@@ -180,7 +185,7 @@ class _CandidatePageState extends State<CandidatePage> {
       leading: icon,
       title: Text(title),
       onTap: () {
-        _launchUrl(channel['id']);
+        _launchUrl(url);
       },
     );
   }
@@ -189,5 +194,19 @@ class _CandidatePageState extends State<CandidatePage> {
     if (await canLaunch(url)) {
       await launch(url);
     }
+  }
+
+  String _removeTrailingSlash(String s) {
+    if (s.endsWith("/")) {
+      return s.substring(0, s.length - 1);
+    }
+    return s;
+  }
+
+  String _getUsernameFromUri(Uri uri, int position) {
+    if (uri.pathSegments != null && uri.pathSegments.length == position + 1) {
+      return uri.pathSegments[position];
+    }
+    return null;
   }
 }
