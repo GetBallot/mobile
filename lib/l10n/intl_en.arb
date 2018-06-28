@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-06-19T14:43:24.301982",
+  "@@last_modified": "2018-06-27T19:01:54.907912",
   "mainTitle": "Ballot",
   "@mainTitle": {
     "type": "text",
@@ -77,6 +77,11 @@
   },
   "dropOffDatesLabel": "Drop-off Location Dates",
   "@dropOffDatesLabel": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "upcomingElectionHeader": "Upcoming Election",
+  "@upcomingElectionHeader": {
     "type": "text",
     "placeholders": {}
   },

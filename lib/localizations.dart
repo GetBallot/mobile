@@ -133,6 +133,13 @@ class BallotLocalizations {
     );
   }
 
+  String get upcomingElectionHeader {
+    return Intl.message(
+      'Upcoming Election',
+      name: 'upcomingElectionHeader',
+    );
+  }
+
   String get contestsHeader {
     return Intl.message(
       'Ballot Information',

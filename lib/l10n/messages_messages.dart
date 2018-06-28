@@ -40,6 +40,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "pollingStationHoursLabel" : MessageLookupByLibrary.simpleMessage("Voting Hours"),
     "required" : MessageLookupByLibrary.simpleMessage("Required"),
     "signInWithGoogle" : MessageLookupByLibrary.simpleMessage("Sign in with Google"),
+    "upcomingElectionHeader" : MessageLookupByLibrary.simpleMessage("Upcoming Election"),
     "votingAddressLabel" : MessageLookupByLibrary.simpleMessage("Voting Address"),
     "votingLocationTitle" : MessageLookupByLibrary.simpleMessage("Voting Location"),
     "votingLocationsTitle" : MessageLookupByLibrary.simpleMessage("Voting Locations"),

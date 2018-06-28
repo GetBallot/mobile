@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:intl/intl.dart';
 
 import 'address_input.dart';
 import 'contest.dart';
@@ -67,6 +68,18 @@ class VotingProfile extends StatelessWidget {
     final election =
         doc.exists && doc.data != null ? doc.data['election'] : null;
 
+    if (election != null && election['electionDay'] != null) {
+      items.add({
+        '_listItemType': 'h1',
+        'text': election['name'] ??
+            BallotLocalizations.of(context).upcomingElectionHeader
+      });
+      final electionDay = DateTime.parse(election['electionDay']);
+      final formatter = DateFormat('yyyy-MM-dd');
+      items.add(
+          {'_listItemType': 'text', 'text': formatter.format(electionDay)});
+    }
+
     List votingLocations =
         doc.exists && doc.data != null ? doc.data['votingLocations'] : null;
 
@@ -82,7 +95,7 @@ class VotingProfile extends StatelessWidget {
 
     if (contests != null) {
       items.add({
-        '_listItemType': 'header',
+        '_listItemType': 'h2',
         'text': BallotLocalizations.of(context).contestsHeader
       });
       for (int i = 0; i < contests.length; ++i) {
@@ -144,12 +157,19 @@ class VotingProfile extends StatelessWidget {
             return PollingStationPage.getAddressHeader(context, item);
           }
 
-          if (type == 'header') {
+          if (type == 'h1') {
+            return getHeader(theme,
+                text: item['text'],
+                backgroundColor: theme.accentColor,
+                textColor: theme.accentTextTheme.title.color);
+          }
+
+          if (type == 'h2') {
             return getHeader(theme, text: item['text']);
           }
 
           if (type == 'text') {
-            return ListTile(title: item['text']);
+            return ListTile(title: Text(item['text']));
           }
 
           if (type == 'contest') {
