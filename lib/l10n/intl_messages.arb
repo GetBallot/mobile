@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2018-06-27T19:01:54.907912",
+  "@@last_modified": "2018-06-27T19:34:18.505192",
   "mainTitle": "Ballot",
   "@mainTitle": {
     "type": "text",
@@ -80,18 +80,18 @@
     "type": "text",
     "placeholders": {}
   },
-  "upcomingElectionHeader": "Upcoming Election",
+  "upcomingElectionHeader": "Ballot Information",
   "@upcomingElectionHeader": {
     "type": "text",
     "placeholders": {}
   },
-  "contestsHeader": "Ballot Information",
+  "contestsHeader": "Contests",
   "@contestsHeader": {
     "type": "text",
     "placeholders": {}
   },
-  "nullContests": "Election unknown",
-  "@nullContests": {
+  "electionUnknown": "Election unknown",
+  "@electionUnknown": {
     "type": "text",
     "placeholders": {}
   },

@@ -68,6 +68,17 @@ class VotingProfile extends StatelessWidget {
     final election =
         doc.exists && doc.data != null ? doc.data['election'] : null;
 
+    if (election == null) {
+      items.add({
+        '_listItemType': 'h2',
+        'text': BallotLocalizations.of(context).upcomingElectionHeader
+      });
+      items.add({
+        '_listItemType': 'text',
+        'text': BallotLocalizations.of(context).electionUnknown
+      });
+    }
+
     if (election != null && election['electionDay'] != null) {
       items.add({
         '_listItemType': 'h1',

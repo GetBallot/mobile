@@ -135,22 +135,22 @@ class BallotLocalizations {
 
   String get upcomingElectionHeader {
     return Intl.message(
-      'Upcoming Election',
+      'Ballot Information',
       name: 'upcomingElectionHeader',
     );
   }
 
   String get contestsHeader {
     return Intl.message(
-      'Ballot Information',
+      'Contests',
       name: 'contestsHeader',
     );
   }
 
-  String get nullContests {
+  String get electionUnknown {
     return Intl.message(
       'Election unknown',
-      name: 'nullContests',
+      name: 'electionUnknown',
     );
   }
 
