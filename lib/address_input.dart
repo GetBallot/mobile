@@ -82,7 +82,7 @@ class _AddressInputPageState extends GooglePlacesAutocompleteState {
 
     User
         .getAddressRef(firebaseUser)
-        .setData({'address': address, 'lang': _getLang()});
+        .setData({'address': address, 'lang': Intl.defaultLocale});
 
     if (firstTime) {
       var route = MaterialPageRoute(
@@ -92,11 +92,5 @@ class _AddressInputPageState extends GooglePlacesAutocompleteState {
     } else {
       Navigator.of(context).pop();
     }
-  }
-
-  // TODO: Use BallotLocalizations to always get a supported language
-  String _getLang() {
-    final lang = Intl.defaultLocale;
-    return ['en'].contains(lang) ? lang : 'en';
   }
 }

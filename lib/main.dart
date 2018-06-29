@@ -39,7 +39,7 @@ class Ballot extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
       ],
       supportedLocales: [
-        const Locale('en', ''),
+        const Locale('en', 'US'),
       ],
       // Watch out: MaterialApp creates a Localizations widget
       // with the specified delegates. BallotLocalizations.of()
