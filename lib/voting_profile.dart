@@ -14,7 +14,9 @@ import 'user.dart';
 import 'widgets.dart';
 
 class VotingProfile extends StatelessWidget {
-  VotingProfile({Key key, this.firebaseUser}) : super(key: key);
+  VotingProfile({Key key, this.firebaseUser}) : super(key: key) {
+    _requestElectionUpdate();
+  }
 
   final FirebaseUser firebaseUser;
 
@@ -32,6 +34,15 @@ class VotingProfile extends StatelessWidget {
       ),
       body: _createBody(),
     );
+  }
+
+  _requestElectionUpdate() {
+    User.getAddressRef(firebaseUser).get().then((snapshot) {
+      if (snapshot.exists) {
+        return snapshot.reference
+            .updateData({'updateUpcomingElection': DateTime.now()});
+      }
+    });
   }
 
   Widget _createAddressValue() => StreamBuilder(
