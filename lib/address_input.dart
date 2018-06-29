@@ -66,16 +66,22 @@ class _AddressInputPageState extends GooglePlacesAutocompleteState {
   }
 
   void _updateUser(address) async {
-    User
-        .getRef(firebaseUser)
-        .collection('elections')
-        .document('upcoming')
-        .delete();
+    final oldSnap = await User.getAddressRef(firebaseUser).get();
+
+    if (oldSnap.exists) {
+      Map data = oldSnap.data;
+      if (data['address'] != address) {
+        User.getUpcomingRef(firebaseUser).delete();
+        User
+            .getRef(firebaseUser)
+            .collection('triggers')
+            .document('civicinfo')
+            .delete();
+      }
+    }
 
     User
-        .getRef(firebaseUser)
-        .collection('triggers')
-        .document('address')
+        .getAddressRef(firebaseUser)
         .setData({'address': address, 'lang': _getLang()});
 
     if (firstTime) {
