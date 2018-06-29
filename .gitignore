@@ -35,3 +35,4 @@ gen/
 
 # Firebase
 google-services.json
+GoogleService-Info.plist
