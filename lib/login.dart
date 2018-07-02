@@ -66,8 +66,29 @@ class LoginPage extends StatelessWidget {
       ),
       body: Center(
         child: RaisedButton(
-            child: Text(BallotLocalizations.of(context).signInWithGoogle,
-                style: TextStyle(fontSize: 16.0)),
+            color: Color(0xFF4285F4),
+            padding: const EdgeInsets.all(0.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(1.0),
+                  child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                              BorderRadius.all(const Radius.circular(1.0))),
+                      child: Image(
+                          image: AssetImage('icons/google_signin_logo.png'))),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(BallotLocalizations.of(context).signInWithGoogle,
+                      style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            ),
             onPressed: () {
               _signInWithGoogle().then((user) {
                 var route = MaterialPageRoute(
