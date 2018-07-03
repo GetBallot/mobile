@@ -27,7 +27,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.getballot.staging"
+        applicationId "com.getballot"
         minSdkVersion 16
         targetSdkVersion 27
         versionCode 1

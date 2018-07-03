@@ -1,4 +1,4 @@
-package com.ballot
+package com.getballot
 
 import android.os.Bundle
 
