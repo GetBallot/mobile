@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import 'address_input.dart';
@@ -35,9 +36,18 @@ class LoginPage extends StatelessWidget {
     return null;
   }
 
+  static Widget createLoginButton(context, auth, googleSignIn, lambda) {
+    return IconButton(
+      icon: Icon(FontAwesomeIcons.signInAlt),
+      onPressed: () {
+        _linkWithGoogleCredential(auth, googleSignIn).then(lambda);
+      },
+    );
+  }
+
   static Widget createLogoutButton(context, auth, googleSignIn) {
     return IconButton(
-      icon: Icon(Icons.exit_to_app),
+      icon: Icon(FontAwesomeIcons.signOutAlt),
       onPressed: () {
         _logOut(auth, googleSignIn).then((_) =>
             Navigator.of(context).pushReplacementNamed(LoginPage.routeName));
@@ -58,6 +68,23 @@ class LoginPage extends StatelessWidget {
     return User(firebaseUser, snapshot);
   }
 
+  Future<User> _signInAnonymously() async {
+    final firebaseUser = await _auth.signInAnonymously();
+    DocumentSnapshot snapshot = await User.getAddressRef(firebaseUser).get();
+    return User(firebaseUser, snapshot);
+  }
+
+  static Future<User> _linkWithGoogleCredential(auth, googleSignIn) async {
+    final GoogleSignInAccount googleUser = await googleSignIn.signIn();
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser.authentication;
+    final firebaseUser = await auth.linkWithGoogleCredential(
+        idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
+
+    DocumentSnapshot snapshot = await User.getAddressRef(firebaseUser).get();
+    return User(firebaseUser, snapshot);
+  }
+
   @override
   Widget build(context) {
     return Scaffold(
@@ -65,38 +92,59 @@ class LoginPage extends StatelessWidget {
         title: Text(BallotLocalizations.of(context).mainTitle),
       ),
       body: Center(
-        child: RaisedButton(
-            color: Color(0xFF4285F4),
-            padding: const EdgeInsets.all(0.0),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(1.0),
-                  child: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            RaisedButton(
+                color: Color(0xFF4285F4),
+                padding: const EdgeInsets.all(0.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(1.0),
+                      child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius:
+                                  BorderRadius.all(const Radius.circular(1.0))),
+                          child: Image(
+                              image:
+                                  AssetImage('icons/google_signin_logo.png'))),
+                    ),
+                    Padding(
                       padding: const EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius:
-                              BorderRadius.all(const Radius.circular(1.0))),
-                      child: Image(
-                          image: AssetImage('icons/google_signin_logo.png'))),
+                      child: Text(
+                          BallotLocalizations.of(context).signInWithGoogle,
+                          style: TextStyle(color: Colors.white)),
+                    ),
+                  ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(BallotLocalizations.of(context).signInWithGoogle,
-                      style: TextStyle(color: Colors.white)),
-                ),
-              ],
-            ),
-            onPressed: () {
-              _signInWithGoogle().then((user) {
-                var route = MaterialPageRoute(
-                  builder: (context) => LoginPage.onLogin(context, user),
-                );
-                Navigator.of(context).pushReplacement(route);
-              });
-            }),
+                onPressed: () {
+                  _signInWithGoogle().then((user) {
+                    var route = MaterialPageRoute(
+                      builder: (context) => LoginPage.onLogin(context, user),
+                    );
+                    Navigator.of(context).pushReplacement(route);
+                  });
+                }),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: FlatButton(
+                child: Text('Skip', style: TextStyle(color: Colors.grey)),
+                onPressed: () {
+                  _signInAnonymously().then((user) {
+                    var route = MaterialPageRoute(
+                      builder: (context) => LoginPage.onLogin(context, user),
+                    );
+                    Navigator.of(context).pushReplacement(route);
+                  });
+                },
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

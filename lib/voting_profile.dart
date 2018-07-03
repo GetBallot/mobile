@@ -13,12 +13,26 @@ import 'polling_station.dart';
 import 'user.dart';
 import 'widgets.dart';
 
-class VotingProfile extends StatelessWidget {
-  VotingProfile({Key key, this.firebaseUser}) : super(key: key) {
+class VotingProfile extends StatefulWidget {
+  VotingProfile({Key key, this.firebaseUser});
+
+  final FirebaseUser firebaseUser;
+
+  @override
+  _VotingProfileState createState() =>
+      _VotingProfileState(firebaseUser: firebaseUser);
+}
+
+class _VotingProfileState extends State<VotingProfile> {
+  _VotingProfileState({Key key, this.firebaseUser});
+
+  @override
+  initState() {
+    super.initState();
     _requestElectionUpdate();
   }
 
-  final FirebaseUser firebaseUser;
+  FirebaseUser firebaseUser;
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -29,7 +43,15 @@ class VotingProfile extends StatelessWidget {
       appBar: AppBar(
         title: Text(BallotLocalizations.of(context).votingProfileTitle),
         actions: <Widget>[
-          LoginPage.createLogoutButton(context, _auth, _googleSignIn),
+          firebaseUser.isAnonymous
+              ? LoginPage.createLoginButton(
+                  context,
+                  _auth,
+                  _googleSignIn,
+                  (user) => setState(() {
+                        firebaseUser = user.firebaseUser;
+                      }))
+              : LoginPage.createLogoutButton(context, _auth, _googleSignIn)
         ],
       ),
       body: _createBody(),

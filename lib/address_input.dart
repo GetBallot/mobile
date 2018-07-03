@@ -45,7 +45,7 @@ class _AddressInputPageState extends GooglePlacesAutocompleteState {
       key: _searchScaffoldKey,
       appBar: AppBar(
         title: AppBarPlacesAutoCompleteTextField(),
-        actions: firstTime
+        actions: firstTime && !firebaseUser.isAnonymous
             ? <Widget>[
                 LoginPage.createLogoutButton(context, _auth, _googleSignIn),
               ]
