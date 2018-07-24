@@ -29,7 +29,7 @@ class Ballot extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: new ThemeData(
-        primarySwatch: Colors.deepPurple,
+        primaryColor: Color(0xFF003366),
       ),
       onGenerateTitle: (BuildContext context) =>
           BallotLocalizations.of(context).mainTitle,
