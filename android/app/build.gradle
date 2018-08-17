@@ -48,6 +48,19 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+
+    flavorDimensions 'env'
+
+    productFlavors {
+        staging {
+            dimension 'env'
+            applicationIdSuffix '.staging'
+            versionNameSuffix '-staging'
+        }
+        production {
+            dimension 'env'
+        }
+    }
 }
 
 flutter {
