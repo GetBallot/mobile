@@ -7,6 +7,9 @@ First thing first, read [DESIGN.md](https://github.com/GetBallot/mobile/blob/mas
 ### Flutter
 Set up [Flutter](https://flutter.io/).
 
+If Android Studio complains that the Dart SDK is not installed, point it to
+`~/development/flutter/bin/cache/dart-sdk` (`~/development/flutter` beingfire the directory where you installed Flutter).
+
 ### Google Civic Information API
 1. Acquire an API key for [Google Civic Information API
 ](https://developers.google.com/civic-information/docs/using_api).
