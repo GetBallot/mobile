@@ -13,8 +13,7 @@ If Android Studio complains that the Dart SDK is not installed, point it to
 ### Google Civic Information API
 1. Acquire an API key for [Google Civic Information API
 ](https://developers.google.com/civic-information/docs/using_api).
-2. Put Google API key in `lib/credentials.dart`.
-3. Run `git update-index --assume-unchanged lib/credentials.dart` so you do not check in your credentials accidentally.
+2. Copy `lib/credentials.dart.template` to `lib/credentials.dart` and put Google API key in it.
 
 ### Firebase
 1. In [Firebase console](https://console.firebase.google.com/), find the project you created for [Google Civic Information API

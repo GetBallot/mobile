@@ -36,3 +36,6 @@ gen/
 # Firebase
 google-services.json
 GoogleService-Info.plist
+
+# Ballot
+credentials.dart
