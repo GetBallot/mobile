@@ -72,16 +72,18 @@ class _AddressInputPageState extends GooglePlacesAutocompleteState {
       Map data = oldSnap.data;
       if (data['address'] != address) {
         User.getUpcomingRef(firebaseUser).delete();
-        User
-            .getRef(firebaseUser)
+        User.getRef(firebaseUser)
             .collection('triggers')
             .document('civicinfo')
+            .delete();
+        User.getRef(firebaseUser)
+            .collection('elections')
+            .document('upcoming')
             .delete();
       }
     }
 
-    User
-        .getAddressRef(firebaseUser)
+    User.getAddressRef(firebaseUser)
         .setData({'address': address, 'lang': Intl.defaultLocale});
 
     if (firstTime) {
