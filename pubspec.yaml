@@ -26,9 +26,7 @@ dependencies:
   # Use with the Cupertino Icons class for iOS style icons.
   cupertino_icons: ^0.1.2
 
-# Run `flutter packages pub run build_runner build` to generate chopper classes
 dev_dependencies:
-  build_runner: ^0.8.9
 
 
 # For information on the generic Dart part of this file, see the
