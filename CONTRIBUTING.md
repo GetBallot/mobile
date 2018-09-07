@@ -21,16 +21,39 @@ If `flutter doctor` complains about Android licenses, run
 ### Firebase
 1. In [Firebase console](https://console.firebase.google.com/), find the project you created for [Google Civic Information API
 ](https://developers.google.com/civic-information/docs/using_api).
-2. Project Overview &rarr; Add Firebase to your Android app.
-3. Put `com.getballot.guide.staging` as package name
-4. Download `google-services.json`. Move to `android/app`.
-5. Authentication &rarr; Sign-in method &rarr; enable Google and Anonymous
-6. Database  &rarr; Get Started
+
+
+**For Android:**
+```
+- Project Overview → Add App → Android.
+- Put `com.getballot.guide.staging` as package name
+- Download `google-services.json`. Move to `android/app`.
+```
+
+**For IOS:**
+```
+- Project Overview → Add App → IOS.
+- Put `com.getballot.staging` as package name
+- Download `GoogleServices-Info.plist`. Move to `ios/Runner`.
+```
+
+2. Authentication &rarr; Sign-in method &rarr; enable Google and Anonymous
+3. Database  &rarr; Get Started
 
 ### Android Studio
-After your fork and clone the project, Open (instead of import) in Android Studio.
+After you fork and clone the project, Open (instead of import) in Android Studio.
 
 On the toolbar, click on the down triangle next to `main.dart`. Select `Edit Configurations...`. Set Build flavor to `staging`.
+
+### Xcode
+After you fork and clone the project, Open Runner.xcworkspace.
+
+Before compliing and running the app, go to:
+File > Workplace Settings > Build System: Legacy Build System (It’s on New Build System by default)
+
+This makes sure the legacy code is read properly.
+
+Now run the app.
 
 ## Issues
 
