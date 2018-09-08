@@ -61,7 +61,9 @@ class _ContestPageState extends State<ContestPage> {
           final candidates = contest['candidates'];
           if (candidates != null) {
             candidates.forEach((candidate) {
-              candidate['fav'] = Favorites.isFav(favs, candidate['favId']);
+              candidate['fav'] = Favorites.isFav(favs, candidate['favId']) ||
+                  (candidate['oldFavId'] != null &&
+                      Favorites.isFav(favs, candidate['oldFavId']));
             });
           }
         }
@@ -129,19 +131,18 @@ class _ContestPageState extends State<ContestPage> {
                       }),
                 ),
                 onTap: () {
-                  final ref = User
-                      .getRef(widget.firebaseUser)
+                  final ref = User.getRef(widget.firebaseUser)
                       .collection('elections')
                       .document('upcoming');
                   Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => CandidatePage(
-                              firebaseUser: widget.firebaseUser,
-                              ref: ref,
-                              electionId: widget.electionId,
-                              contestIndex: widget.contestIndex,
-                              candidateIndex: candidateIndex,
-                            ),
-                      ));
+                    builder: (context) => CandidatePage(
+                          firebaseUser: widget.firebaseUser,
+                          ref: ref,
+                          electionId: widget.electionId,
+                          contestIndex: widget.contestIndex,
+                          candidateIndex: candidateIndex,
+                        ),
+                  ));
                 },
               );
             }

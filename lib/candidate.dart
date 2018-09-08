@@ -58,7 +58,9 @@ class _CandidatePageState extends State<CandidatePage> {
       if (electionSnapshot.exists) {
         final candidate = electionSnapshot.data['contests'][widget.contestIndex]
             ['candidates'][widget.candidateIndex];
-        candidate['fav'] = Favorites.isFav(favs, candidate['favId']);
+        candidate['fav'] = Favorites.isFav(favs, candidate['favId']) ||
+            (candidate['oldFavId'] != null &&
+                Favorites.isFav(favs, candidate['oldFavId']));
       }
 
       return electionSnapshot;
