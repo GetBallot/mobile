@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 Widget getHeader(ThemeData theme,
-        {String text,
+        {String title,
+        String subtitle,
         String trailing,
         Color backgroundColor,
         Color textColor,
@@ -9,11 +10,15 @@ Widget getHeader(ThemeData theme,
     Container(
         color: backgroundColor ?? theme.secondaryHeaderColor,
         child: ListTile(
-          title: Text(text,
+          title: Text(title,
               style: TextStyle(
                   color: textColor ?? theme.primaryColor,
                   fontSize: 18.0,
                   fontWeight: FontWeight.bold)),
+          subtitle: subtitle == null
+              ? null
+              : Text(subtitle,
+                  style: TextStyle(color: textColor ?? theme.primaryColor)),
           trailing: trailing == null
               ? null
               : new Padding(

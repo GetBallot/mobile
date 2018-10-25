@@ -171,12 +171,12 @@ class _VotingProfileState extends State<VotingProfile> {
 
           if (type == 'addressHeader') {
             return getHeader(theme,
-                text: BallotLocalizations.of(context).votingAddressLabel,
+                title: BallotLocalizations.of(context).votingAddressLabel,
                 trailing: BallotLocalizations.of(context).divisionsTitle,
                 onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => DivisionsPage(firebaseUser),
-                  ));
+                builder: (context) => DivisionsPage(firebaseUser),
+              ));
             });
           }
 
@@ -189,11 +189,11 @@ class _VotingProfileState extends State<VotingProfile> {
                 ? doc.data['votingLocations']
                 : null;
             return getHeader(theme,
-                text: BallotLocalizations.of(context).votingLocationTitle,
+                title: BallotLocalizations.of(context).votingLocationTitle,
                 trailing: BallotLocalizations.of(context).all, onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => PollingStationsPage(votingLocations),
-                  ));
+                builder: (context) => PollingStationsPage(votingLocations),
+              ));
             });
           }
 
@@ -203,13 +203,13 @@ class _VotingProfileState extends State<VotingProfile> {
 
           if (type == 'h1') {
             return getHeader(theme,
-                text: item['text'],
+                title: item['text'],
                 backgroundColor: theme.accentColor,
                 textColor: theme.accentTextTheme.title.color);
           }
 
           if (type == 'h2') {
-            return getHeader(theme, text: item['text']);
+            return getHeader(theme, title: item['text']);
           }
 
           if (type == 'text') {
@@ -220,17 +220,16 @@ class _VotingProfileState extends State<VotingProfile> {
             return ListTile(
                 title: Text(item['name']),
                 onTap: () {
-                  final ref = User
-                      .getRef(firebaseUser)
+                  final ref = User.getRef(firebaseUser)
                       .collection('elections')
                       .document('upcoming');
                   Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => ContestPage(
-                            firebaseUser: firebaseUser,
-                            ref: ref,
-                            electionId: item['electionId'],
-                            contestIndex: item['contestIndex']),
-                      ));
+                    builder: (context) => ContestPage(
+                        firebaseUser: firebaseUser,
+                        ref: ref,
+                        electionId: item['electionId'],
+                        contestIndex: item['contestIndex']),
+                  ));
                 });
           }
 
@@ -240,11 +239,11 @@ class _VotingProfileState extends State<VotingProfile> {
 
   void _goToAddressInput(context) {
     Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) => AddressInputPage(
-              firebaseUser: firebaseUser,
-              firstTime: false,
-              hint: BallotLocalizations.of(context).votingAddressLabel),
-        ));
+      builder: (context) => AddressInputPage(
+          firebaseUser: firebaseUser,
+          firstTime: false,
+          hint: BallotLocalizations.of(context).votingAddressLabel),
+    ));
   }
 
   ListTile _createVotingAddressListTile(context, String address) {

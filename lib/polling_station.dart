@@ -64,8 +64,8 @@ class PollingStationPage extends StatelessWidget {
         child: getAddressListTile(context, station, true),
         onTap: () {
           Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => PollingStationPage(station),
-              ));
+            builder: (context) => PollingStationPage(station),
+          ));
         });
   }
 
@@ -75,7 +75,7 @@ class PollingStationPage extends StatelessWidget {
 
     final String name = station['address']['locationName'];
     if (name != null) {
-      rows.add(getHeader(theme, text: name));
+      rows.add(getHeader(theme, title: name));
     }
 
     rows.add(getAddressListTile(context, station, false));

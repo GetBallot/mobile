@@ -88,31 +88,39 @@ class _ContestPageState extends State<ContestPage> {
 
   Widget _createContestBody(election, contest, loading) {
     bool isReferendum = contest['referendumTitle'] != null;
-    final candidates = contest == null
-        ? null
-        : isReferendum
-            ? contest['referendumBallotResponses']
-            : contest['candidates'];
-    int count =
-        (candidates == null ? 1 : candidates.length) + (isReferendum ? 0 : 1);
+    final candidates = contest == null ? [] : contest['candidates'];
+    int referendumCount = 0;
+    if (isReferendum) {
+      if (contest['referendumText'] != null) {
+        referendumCount += 1;
+      }
+    }
+    int count = 1 + candidates.length + (isReferendum ? referendumCount : 0);
     return ListView.builder(
       itemCount: count,
       itemBuilder: (context, index) {
         final theme = Theme.of(context);
         switch (index) {
           case 0:
-            return getHeader(theme, text: contest['name']);
+            return getHeader(theme,
+                title: contest['name'],
+                subtitle: contest['referendumSubtitle']);
           default:
             if (loading) {
               return ListTile(
                   leading: CircularProgressIndicator(),
                   title: Text(BallotLocalizations.of(context).loading));
             }
+            if (referendumCount > 0) {
+              if (index == 1) {
+                return ListTile(title: Text(contest['referendumText']));
+              }
+            }
             if (candidates == null) {
               return ListTile(
                   title: Text(BallotLocalizations.of(context).nullCandidates));
             } else {
-              final candidateIndex = index - 1;
+              final candidateIndex = index - 1 - referendumCount;
               final candidate = candidates[candidateIndex];
               return GestureDetector(
                 child: ListTile(
@@ -130,20 +138,22 @@ class _ContestPageState extends State<ContestPage> {
                         });
                       }),
                 ),
-                onTap: () {
-                  final ref = User.getRef(widget.firebaseUser)
-                      .collection('elections')
-                      .document('upcoming');
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => CandidatePage(
-                          firebaseUser: widget.firebaseUser,
-                          ref: ref,
-                          electionId: widget.electionId,
-                          contestIndex: widget.contestIndex,
-                          candidateIndex: candidateIndex,
-                        ),
-                  ));
-                },
+                onTap: isReferendum
+                    ? null
+                    : () {
+                        final ref = User.getRef(widget.firebaseUser)
+                            .collection('elections')
+                            .document('upcoming');
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => CandidatePage(
+                                firebaseUser: widget.firebaseUser,
+                                ref: ref,
+                                electionId: widget.electionId,
+                                contestIndex: widget.contestIndex,
+                                candidateIndex: candidateIndex,
+                              ),
+                        ));
+                      },
               );
             }
         }
