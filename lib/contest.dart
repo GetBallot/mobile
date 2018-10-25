@@ -127,6 +127,10 @@ class _ContestPageState extends State<ContestPage> {
                   title: Text(
                     candidate['name'],
                   ),
+                  subtitle: candidate['party'] != null
+                      ? Text(candidate['party'],
+                          style: TextStyle(fontSize: 14.0))
+                      : null,
                   trailing: GestureDetector(
                       child: Icon(
                           candidate['fav'] ? Icons.star : Icons.star_border,
