@@ -149,10 +149,29 @@ class _CandidatePageState extends State<CandidatePage> {
       channels.forEach((channel) => rows.add(_createSocialChannel(channel)));
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: rows,
-    );
+    if (candidate['video'] != null) {
+      rows.add(
+        ListTile(
+          title: Stack(
+            children: <Widget>[
+              Image.network(candidate['video']['thumbnail']),
+              Icon(Icons.play_circle_filled,
+                  color: Colors.white70, size: 100.0),
+            ],
+            alignment: AlignmentDirectional.center,
+          ),
+          onTap: () {
+            _launchUrl(candidate['video']['url']);
+          },
+        ),
+      );
+    }
+
+    return ListView.builder(
+        itemCount: rows.length,
+        itemBuilder: (context, index) {
+          return rows[index];
+        });
   }
 
   Widget _createSocialChannel(Map channel) {
