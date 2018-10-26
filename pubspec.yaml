@@ -18,7 +18,7 @@ dependencies:
 
   url_launcher: ^3.0.3
 
-  flutter_google_places_autocomplete: ^0.1.1+1
+  flutter_google_places: 0.1.2
 
   font_awesome_flutter: ^8.0.1
 

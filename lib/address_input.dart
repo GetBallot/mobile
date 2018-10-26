@@ -2,7 +2,8 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_google_places_autocomplete/flutter_google_places_autocomplete.dart';
+import 'package:google_maps_webservice/places.dart';
+import 'package:flutter_google_places/flutter_google_places.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:intl/intl.dart';
 
@@ -11,7 +12,7 @@ import 'login.dart';
 import 'user.dart';
 import 'voting_profile.dart';
 
-class AddressInputPage extends GooglePlacesAutocompleteWidget {
+class AddressInputPage extends PlacesAutocompleteWidget {
   final FirebaseUser firebaseUser;
   final bool firstTime;
 
@@ -28,7 +29,7 @@ class AddressInputPage extends GooglePlacesAutocompleteWidget {
       _AddressInputPageState(firebaseUser, firstTime);
 }
 
-class _AddressInputPageState extends GooglePlacesAutocompleteState {
+class _AddressInputPageState extends PlacesAutocompleteState {
   _AddressInputPageState(this.firebaseUser, this.firstTime);
 
   final FirebaseUser firebaseUser;
@@ -51,7 +52,7 @@ class _AddressInputPageState extends GooglePlacesAutocompleteState {
               ]
             : null,
       ),
-      body: GooglePlacesAutocompleteResult(onTap: (p) {
+      body: PlacesAutocompleteResult(onTap: (p) {
         _processPrediction(p, _searchScaffoldKey.currentState);
       }),
     );
