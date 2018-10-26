@@ -87,7 +87,7 @@ class _ContestPageState extends State<ContestPage> {
       });
 
   Widget _createContestBody(election, contest, loading) {
-    bool isReferendum = contest['referendumTitle'] != null;
+    bool isReferendum = contest != null && contest['referendumTitle'] != null;
     final candidates = contest == null ? [] : contest['candidates'];
     int referendumCount = 0;
     if (isReferendum) {
