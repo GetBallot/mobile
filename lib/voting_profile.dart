@@ -61,8 +61,11 @@ class _VotingProfileState extends State<VotingProfile> {
   _requestElectionUpdate() {
     User.getAddressRef(firebaseUser).get().then((snapshot) {
       if (snapshot.exists) {
-        return snapshot.reference
-            .updateData({'updateUpcomingElection': DateTime.now()});
+        DateTime now = DateTime.now();
+        DateTime lastUpdate = snapshot.data['updateUpcomingElection'];
+        if (lastUpdate == null || now.difference(lastUpdate).inHours >= 12) {
+          return snapshot.reference.updateData({'updateUpcomingElection': now});
+        }
       }
     });
   }
