@@ -167,11 +167,18 @@ class _CandidatePageState extends State<CandidatePage> {
       );
     }
 
-    return ListView.builder(
+    final listView = ListView.builder(
         itemCount: rows.length,
         itemBuilder: (context, index) {
           return rows[index];
         });
+
+    return candidate['photoUrl'] == null
+        ? listView
+        : Padding(
+            padding: const EdgeInsets.fromLTRB(0.0, 16.0, 0.0, 12.0),
+            child: listView,
+          );
   }
 
   Widget _createSocialChannel(Map channel) {
